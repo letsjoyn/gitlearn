@@ -53,6 +53,18 @@ const AIResearchAgent = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Listen for mode changes and close assistant when switching to tourist
+  useEffect(() => {
+    const handleModeToggle = (event: CustomEvent) => {
+      if (event.detail.mode === 'tourist') {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('toggleAIAssistant', handleModeToggle as EventListener);
+    return () => window.removeEventListener('toggleAIAssistant', handleModeToggle as EventListener);
+  }, []);
+
   const suggestedQuestions = [
     "Tell me about the history of Rumtek Monastery",
     "What are the main Buddhist festivals celebrated in Sikkim?",
@@ -216,7 +228,7 @@ Could you be more specific about what aspect interests you? I can search across 
               <>
                 {/* Chat Messages */}
                 <CardContent className="flex-1 p-0">
-                  <ScrollArea className="h-full p-4">
+                  <ScrollArea className="h-full max-h-[400px] p-4">
                     <div className="space-y-4">
                       {messages.map((message) => (
                         <div

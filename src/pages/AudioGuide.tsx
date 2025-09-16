@@ -254,6 +254,57 @@ const AudioGuide = () => {
           ))}
         </div>
 
+        {/* Mobile App Download Section */}
+        <Card className="mb-12">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Smartphone className="h-6 w-6" />
+              Download Our Mobile App
+            </CardTitle>
+            <CardDescription>
+              Get our mobile app for the best offline experience with GPS-triggered audio guides
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <Button size="lg" className="w-full mb-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800">
+                  <Smartphone className="h-5 w-5 mr-2" />
+                  Download APK
+                </Button>
+                <p className="text-sm text-muted-foreground">Direct download for Android devices</p>
+              </div>
+              
+              <div className="text-center">
+                <Button size="lg" variant="outline" className="w-full mb-3">
+                  <Smartphone className="h-5 w-5 mr-2" />
+                  Google Play Store
+                </Button>
+                <p className="text-sm text-muted-foreground">Official Android app store</p>
+              </div>
+              
+              <div className="text-center">
+                <Button size="lg" variant="outline" className="w-full mb-3">
+                  <Smartphone className="h-5 w-5 mr-2" />
+                  Apple App Store
+                </Button>
+                <p className="text-sm text-muted-foreground">Available for iOS devices</p>
+              </div>
+            </div>
+            
+            <div className="mt-6 p-4 bg-muted rounded-lg">
+              <h4 className="font-semibold mb-2">App Features:</h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Offline audio guides for remote areas</li>
+                <li>• GPS-triggered automatic content</li>
+                <li>• Bluetooth beacon integration</li>
+                <li>• Multi-language support</li>
+                <li>• Downloadable monastery maps</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Audio Player Demo */}
         <Card className="max-w-2xl mx-auto">
           <CardHeader>

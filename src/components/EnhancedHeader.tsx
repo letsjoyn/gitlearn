@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import SignInDialog from "@/components/SignInDialog";
 
 const EnhancedHeader = () => {
   const location = useLocation();
@@ -39,7 +40,6 @@ const EnhancedHeader = () => {
   const exploreItems = [
     { name: "Monasteries Map", path: "/monasteries", icon: Map, description: "Interactive map of Sikkim monasteries" },
     { name: "360° Virtual Tours", path: "/virtual-tours", icon: Camera, description: "Immersive virtual monastery experiences" },
-    { name: "Smart Routes & Booking", path: "/booking", icon: Route, description: "AI-powered travel planning & booking" },
   ];
 
   const archiveItems = mode === 'researcher' ? [
@@ -118,78 +118,55 @@ const EnhancedHeader = () => {
                 {/* Digital Archives (Researcher Mode Only) */}
                 {mode === 'researcher' && (
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger>Digital Archives</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid gap-3 p-4 w-80">
-                        <div className="flex items-center gap-2 p-2 bg-secondary/10 rounded-lg">
-                          <Badge variant="secondary">Researcher Access</Badge>
-                        </div>
-                        {archiveItems.map((item) => (
-                          <Link
-                            key={item.name}
-                            to={item.path}
-                            className="block select-none space-y-1 rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="flex items-center gap-2 text-sm font-medium">
-                              <item.icon className="h-4 w-4" />
-                              {item.name}
-                            </div>
-                            <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
-                              {item.description}
-                            </p>
-                          </Link>
-                        ))}
-                      </div>
-                    </NavigationMenuContent>
+                    <Link 
+                      to="/archives" 
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        isActive("/archives") && "bg-accent text-accent-foreground"
+                      )}
+                    >
+                      Digital Archives
+                    </Link>
                   </NavigationMenuItem>
                 )}
 
-                {/* Cultural Calendar */}
+                {/* Events */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>Cultural Calendar</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid gap-3 p-4 w-80">
-                      {calendarItems.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.path}
-                          className="block select-none space-y-1 rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          <div className="flex items-center gap-2 text-sm font-medium">
-                            <item.icon className="h-4 w-4" />
-                            {item.name}
-                          </div>
-                          <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
-                            {item.description}
-                          </p>
-                        </Link>
-                      ))}
-                    </div>
-                  </NavigationMenuContent>
+                  <Link 
+                    to="/calendar" 
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      isActive("/calendar") && "bg-accent text-accent-foreground"
+                    )}
+                  >
+                    Events
+                  </Link>
                 </NavigationMenuItem>
 
                 {/* Audio Guide */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>Audio Guide</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid gap-3 p-4 w-80">
-                      {audioGuideItems.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.path}
-                          className="block select-none space-y-1 rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          <div className="flex items-center gap-2 text-sm font-medium">
-                            <item.icon className="h-4 w-4" />
-                            {item.name}
-                          </div>
-                          <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
-                            {item.description}
-                          </p>
-                        </Link>
-                      ))}
-                    </div>
-                  </NavigationMenuContent>
+                  <Link 
+                    to="/audio-guide" 
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      isActive("/audio-guide") && "bg-accent text-accent-foreground"
+                    )}
+                  >
+                    Audio Guide
+                  </Link>
+                </NavigationMenuItem>
+
+                {/* Booking */}
+                <NavigationMenuItem>
+                  <Link 
+                    to="/booking" 
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      isActive("/booking") && "bg-accent text-accent-foreground"
+                    )}
+                  >
+                    Booking
+                  </Link>
                 </NavigationMenuItem>
 
                 {/* Community */}
@@ -225,17 +202,8 @@ const EnhancedHeader = () => {
               <ModeToggle />
             </div>
 
-            {/* AI Research Agent (Researcher Mode Only) */}
-            {mode === 'researcher' && (
-              <Button variant="outline" size="sm" className="ml-2">
-                <Bot className="h-4 w-4 mr-2" />
-                AI Agent
-              </Button>
-            )}
 
-            <Button variant="outline" size="sm" className="ml-2">
-              Sign In
-            </Button>
+            <SignInDialog />
           </div>
 
           {/* Mobile Menu Button */}
@@ -257,12 +225,6 @@ const EnhancedHeader = () => {
             <div className="flex flex-col space-y-4">
               <div className="flex items-center justify-between mb-4">
                 <ModeToggle />
-                {mode === 'researcher' && (
-                  <Button variant="outline" size="sm">
-                    <Bot className="h-4 w-4 mr-2" />
-                    AI Agent
-                  </Button>
-                )}
               </div>
               
               <Link
@@ -291,56 +253,38 @@ const EnhancedHeader = () => {
 
               {/* Mobile Digital Archives (Researcher Mode Only) */}
               {mode === 'researcher' && (
-                <div className="pl-4 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Digital Archives</div>
-                    <Badge variant="secondary" className="text-xs">Researcher</Badge>
-                  </div>
-                  {archiveItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.path}
-                      className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
+                <Link
+                  to="/archives"
+                  className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Digital Archives
+                </Link>
               )}
 
-              {/* Mobile Cultural Calendar */}
-              <div className="pl-4 space-y-2">
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Cultural Calendar</div>
-                {calendarItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
+              <Link
+                to="/calendar"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Events
+              </Link>
+              
+              <Link
+                to="/audio-guide"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Audio Guide
+              </Link>
 
-              {/* Mobile Audio Guide */}
-              <div className="pl-4 space-y-2">
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Audio Guide</div>
-                {audioGuideItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
+              <Link
+                to="/booking"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Booking
+              </Link>
 
               <Link
                 to="/community"
@@ -358,9 +302,7 @@ const EnhancedHeader = () => {
                 About
               </Link>
               
-              <Button variant="outline" size="sm" className="w-fit">
-                Sign In
-              </Button>
+              <SignInDialog />
             </div>
           </div>
         )}

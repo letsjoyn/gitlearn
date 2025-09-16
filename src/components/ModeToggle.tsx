@@ -31,12 +31,22 @@ export const useMode = () => {
 export const ModeToggle = () => {
   const { mode, setMode } = useMode();
 
+  const handleModeChange = (newMode: 'tourist' | 'researcher') => {
+    setMode(newMode);
+    
+    // Force hide AI assistants when switching modes to trigger re-render
+    const aiAssistantEvent = new CustomEvent('toggleAIAssistant', { 
+      detail: { mode: newMode } 
+    });
+    window.dispatchEvent(aiAssistantEvent);
+  };
+
   return (
     <div className="flex items-center gap-2 p-1 bg-muted rounded-xl">
       <Button
         variant={mode === 'tourist' ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => setMode('tourist')}
+        onClick={() => handleModeChange('tourist')}
         className="flex items-center gap-2 text-sm font-medium transition-all duration-300"
       >
         <Users className="h-4 w-4" />
@@ -45,7 +55,7 @@ export const ModeToggle = () => {
       <Button
         variant={mode === 'researcher' ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => setMode('researcher')}
+        onClick={() => handleModeChange('researcher')}
         className="flex items-center gap-2 text-sm font-medium transition-all duration-300"
       >
         <GraduationCap className="h-4 w-4" />

@@ -108,7 +108,7 @@ const CulturalCalendar = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-heading font-bold text-primary mb-4">
-            Cultural Calendar
+            Events
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Sacred festivals, daily rituals, and cultural events across Sikkim's monasteries

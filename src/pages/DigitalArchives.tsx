@@ -152,17 +152,25 @@ const DigitalArchives = () => {
           </CardContent>
         </Card>
 
-        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="space-y-8">
-          {/* Category Tabs */}
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 h-auto">
+        <div className="space-y-8">
+          {/* Category Filters */}
+          <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
             {categories.map((category) => (
-              <TabsTrigger key={category.id} value={category.id} className="flex flex-col p-4">
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`flex flex-col items-center p-4 rounded-lg border transition-colors ${
+                  selectedCategory === category.id 
+                    ? 'bg-primary text-primary-foreground border-primary' 
+                    : 'bg-background hover:bg-muted border-border'
+                }`}
+              >
                 <category.icon className="h-5 w-5 mb-2" />
                 <span className="text-xs font-medium">{category.name}</span>
                 <Badge variant="outline" className="text-xs mt-1">{category.count}</Badge>
-              </TabsTrigger>
+              </button>
             ))}
-          </TabsList>
+          </div>
 
           {/* AI Features Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -177,66 +185,62 @@ const DigitalArchives = () => {
             ))}
           </div>
 
-          {/* Content Tabs */}
-          {categories.map((category) => (
-            <TabsContent key={category.id} value={category.id}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {featuredItems
-                  .filter(item => category.id === "all" || item.category === category.id)
-                  .map((item, index) => (
-                  <Card key={index} className="card-monastery group">
-                    <div className="aspect-[3/4] relative overflow-hidden">
-                      <img 
-                        src={item.thumbnail} 
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute top-4 right-4">
-                        <Badge 
-                          variant={item.status === 'digitized' ? 'default' : item.status === 'ai-processed' ? 'secondary' : 'outline'}
-                          className="capitalize"
-                        >
-                          {item.status.replace('-', ' ')}
-                        </Badge>
-                      </div>
+          {/* Content Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredItems
+              .filter(item => selectedCategory === "all" || item.category === selectedCategory)
+              .map((item, index) => (
+              <Card key={index} className="card-monastery group">
+                <div className="aspect-[3/4] relative overflow-hidden">
+                  <img 
+                    src={item.thumbnail} 
+                    alt={item.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute top-4 right-4">
+                    <Badge 
+                      variant={item.status === 'digitized' ? 'default' : item.status === 'ai-processed' ? 'secondary' : 'outline'}
+                      className="capitalize"
+                    >
+                      {item.status.replace('-', ' ')}
+                    </Badge>
+                  </div>
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="font-heading text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">{item.description}</p>
+                  
+                  <div className="space-y-2 text-xs text-muted-foreground">
+                    <div className="flex justify-between">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {item.date}
+                      </span>
+                      <span>{item.pages} pages</span>
                     </div>
-                    <CardContent className="p-6">
-                      <h3 className="font-heading text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-4">{item.description}</p>
-                      
-                      <div className="space-y-2 text-xs text-muted-foreground">
-                        <div className="flex justify-between">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            {item.date}
-                          </span>
-                          <span>{item.pages} pages</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <FileText className="h-3 w-3" />
-                          {item.language}
-                        </div>
-                      </div>
+                    <div className="flex items-center gap-1">
+                      <FileText className="h-3 w-3" />
+                      {item.language}
+                    </div>
+                  </div>
 
-                      <div className="flex gap-2 mt-4">
-                        <Button size="sm" variant="outline" className="flex-1">
-                          <Eye className="h-4 w-4 mr-2" />
-                          View
-                        </Button>
-                        <Button size="sm" variant="outline" className="flex-1">
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+                  <div className="flex gap-2 mt-4">
+                    <Button size="sm" variant="outline" className="flex-1">
+                      <Eye className="h-4 w-4 mr-2" />
+                      View
+                    </Button>
+                    <Button size="sm" variant="outline" className="flex-1">
+                      <Download className="h-4 w-4 mr-2" />
+                      Download
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
 
         {/* Access Request Section */}
         <Card className="mt-12">

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MessageCircle, X, Send, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useMode } from "@/components/ModeToggle";
 
 interface Message {
   id: string;
@@ -30,6 +31,7 @@ const botResponses: Record<string, string> = {
 };
 
 const AIAssistant = () => {
+  const { mode } = useMode();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -40,6 +42,23 @@ const AIAssistant = () => {
     }
   ]);
   const [inputMessage, setInputMessage] = useState("");
+
+  // Listen for mode changes and close assistant when switching to researcher
+  useEffect(() => {
+    const handleModeToggle = (event: CustomEvent) => {
+      if (event.detail.mode === 'researcher') {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('toggleAIAssistant', handleModeToggle as EventListener);
+    return () => window.removeEventListener('toggleAIAssistant', handleModeToggle as EventListener);
+  }, []);
+
+  // Don't render in researcher mode
+  if (mode === 'researcher') {
+    return null;
+  }
 
   const handleSendMessage = (content: string) => {
     const userMessage: Message = {
@@ -125,7 +144,7 @@ const AIAssistant = () => {
 
           <CardContent className="flex-1 flex flex-col p-0">
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[300px]">
               {messages.map((message) => (
                 <div
                   key={message.id}

@@ -140,29 +140,28 @@ const BookingSection = () => {
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {pkg.monasteries.map((monastery, idx) => (
-                        <Badge key={idx} variant="outline" className="text-xs">
+                        <Badge key={idx} variant="outline" className="text-xs bg-background border-primary/20 text-primary px-2 py-1">
                           {monastery}
                         </Badge>
                       ))}
                     </div>
                   </div>
                   
-                  <div>
-                    <h4 className="font-semibold text-primary mb-2">Experience Includes</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      {pkg.includes.slice(0, 3).map((item, idx) => (
+                  <details className="group">
+                    <summary className="font-semibold text-primary mb-2 cursor-pointer list-none flex items-center justify-between">
+                      Experience Includes
+                      <span className="text-xs text-muted-foreground group-open:hidden">Click to expand</span>
+                      <span className="text-xs text-muted-foreground hidden group-open:inline">Click to collapse</span>
+                    </summary>
+                    <ul className="text-sm text-muted-foreground space-y-1 mt-2">
+                      {pkg.includes.map((item, idx) => (
                         <li key={idx} className="flex items-start">
                           <span className="text-saffron mr-2">•</span>
                           {item}
                         </li>
                       ))}
-                      {pkg.includes.length > 3 && (
-                        <li className="text-saffron font-medium">
-                          +{pkg.includes.length - 3} more experiences
-                        </li>
-                      )}
                     </ul>
-                  </div>
+                  </details>
                 </div>
               </CardContent>
             </Card>
