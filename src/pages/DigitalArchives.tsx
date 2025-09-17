@@ -1,23 +1,14 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  Card, CardContent, CardDescription, CardHeader, CardTitle 
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
-  BookOpen, 
-  Search, 
-  Download, 
-  Filter, 
-  Calendar, 
-  Tag, 
-  FileText, 
-  Image, 
-  Scroll,
-  Brain,
-  Archive,
-  Eye,
-  Clock
+  Search, Download, Filter, Calendar, Tag, FileText, Image, Scroll,
+  Brain, Archive, Eye
 } from "lucide-react";
 import { useMode } from "@/components/ModeToggle";
 
@@ -25,8 +16,9 @@ const DigitalArchives = () => {
   const { mode } = useMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
 
-  if (mode !== 'researcher') {
+  if (mode !== "researcher") {
     return (
       <div className="min-h-screen bg-gradient-heritage flex items-center justify-center">
         <Card className="max-w-md mx-auto text-center">
@@ -64,51 +56,54 @@ const DigitalArchives = () => {
       language: "Classical Tibetan",
       pages: 247,
       status: "digitized",
-      thumbnail: "/api/placeholder/200/300"
+      thumbnail: "manuscript.jpg", // 🔹 Replace with your image path
+      fileUrl: "/files/manuscript1.pdf",    // 🔹 Replace with actual file
     },
     {
-      title: "Rumtek Monastery Murals Collection", 
+      title: "Rumtek Monastery Murals Collection",
       description: "High-resolution scans of sacred murals with iconographic analysis",
       category: "murals",
       date: "1960s",
       language: "Visual Art",
       pages: 89,
       status: "ai-processed",
-      thumbnail: "/api/placeholder/200/300"
+      thumbnail: "a.jpg", // 🔹 Replace with your image path
+      fileUrl: "/files/mural1.pdf",    // 🔹 Replace with actual file
     },
     {
       title: "Pemayangtse Historical Records",
       description: "Administrative documents and ritual calendars from the monastery archives",
-      category: "documents", 
+      category: "documents",
       date: "1705-1900",
       language: "Tibetan, Nepali",
       pages: 156,
       status: "transcribed",
-      thumbnail: "/api/placeholder/200/300"
-    }
+      thumbnail: "rumtek5.jpg", // 🔹 Replace with your image path
+      fileUrl: "/files/document1.pdf",    // 🔹 Replace with actual file
+    },
   ];
 
   const aiFeatures = [
     {
       title: "Semantic Search",
       description: "AI-powered search across all digitized materials using natural language queries",
-      icon: Brain
+      icon: Brain,
     },
     {
-      title: "Auto-Categorization", 
+      title: "Auto-Categorization",
       description: "Machine learning classification of documents by type, period, and content",
-      icon: Tag
+      icon: Tag,
     },
     {
       title: "OCR & Transcription",
       description: "Optical character recognition for Tibetan scripts with accuracy validation",
-      icon: FileText
+      icon: FileText,
     },
     {
       title: "Metadata Generation",
       description: "Automated extraction of dates, locations, and subject matter from documents",
-      icon: Calendar
-    }
+      icon: Calendar,
+    },
   ];
 
   return (
@@ -123,7 +118,7 @@ const DigitalArchives = () => {
             Comprehensive digital repository of Sikkim monastery heritage with AI-powered discovery tools
           </p>
           <Badge variant="secondary" className="mt-4">
-            Researcher Access • {categories.find(c => c.id === "all")?.count} Items
+            Researcher Access • {categories.find((c) => c.id === "all")?.count} Items
           </Badge>
         </div>
 
@@ -160,22 +155,32 @@ const DigitalArchives = () => {
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
                 className={`flex flex-col items-center p-4 rounded-lg border transition-colors ${
-                  selectedCategory === category.id 
-                    ? 'bg-primary text-primary-foreground border-primary' 
-                    : 'bg-background hover:bg-muted border-border'
+                  selectedCategory === category.id
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background hover:bg-muted border-border"
                 }`}
               >
                 <category.icon className="h-5 w-5 mb-2" />
                 <span className="text-xs font-medium">{category.name}</span>
-                <Badge variant="outline" className="text-xs mt-1">{category.count}</Badge>
+                <Badge
+                  variant={selectedCategory === category.id ? "secondary" : "outline"}
+                  className={`text-xs mt-1 ${
+                    selectedCategory === category.id ? "text-primary-foreground" : ""
+                  }`}
+                >
+                  {category.count}
+                </Badge>
               </button>
             ))}
           </div>
 
-          {/* AI Features Section */}
+          {/* AI Features with hover pop-up */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {aiFeatures.map((feature, index) => (
-              <Card key={index} className="card-heritage">
+              <Card
+                key={index}
+                className="card-heritage transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              >
                 <CardContent className="p-4 text-center">
                   <feature.icon className="h-8 w-8 mx-auto mb-3 text-primary" />
                   <h3 className="font-semibold mb-2">{feature.title}</h3>
@@ -188,57 +193,83 @@ const DigitalArchives = () => {
           {/* Content Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredItems
-              .filter(item => selectedCategory === "all" || item.category === selectedCategory)
+              .filter(
+                (item) =>
+                  selectedCategory === "all" || item.category === selectedCategory
+              )
               .map((item, index) => (
-              <Card key={index} className="card-monastery group">
-                <div className="aspect-[3/4] relative overflow-hidden">
-                  <img 
-                    src={item.thumbnail} 
-                    alt={item.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute top-4 right-4">
-                    <Badge 
-                      variant={item.status === 'digitized' ? 'default' : item.status === 'ai-processed' ? 'secondary' : 'outline'}
-                      className="capitalize"
-                    >
-                      {item.status.replace('-', ' ')}
-                    </Badge>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="font-heading text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">{item.description}</p>
-                  
-                  <div className="space-y-2 text-xs text-muted-foreground">
-                    <div className="flex justify-between">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {item.date}
-                      </span>
-                      <span>{item.pages} pages</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <FileText className="h-3 w-3" />
-                      {item.language}
+                <Card key={index} className="card-monastery group">
+                  <div className="aspect-[3/4] relative overflow-hidden">
+                    <img
+                      src={item.thumbnail}
+                      alt={item.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <Badge
+                        variant={
+                          item.status === "digitized"
+                            ? "default"
+                            : item.status === "ai-processed"
+                            ? "secondary"
+                            : "outline"
+                        }
+                        className="capitalize"
+                      >
+                        {item.status.replace("-", " ")}
+                      </Badge>
                     </div>
                   </div>
+                  <CardContent className="p-6">
+                    <h3 className="font-heading text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {item.description}
+                    </p>
 
-                  <div className="flex gap-2 mt-4">
-                    <Button size="sm" variant="outline" className="flex-1">
-                      <Eye className="h-4 w-4 mr-2" />
-                      View
-                    </Button>
-                    <Button size="sm" variant="outline" className="flex-1">
-                      <Download className="h-4 w-4 mr-2" />
-                      Download
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    <div className="space-y-2 text-xs text-muted-foreground">
+                      <div className="flex justify-between">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {item.date}
+                        </span>
+                        <span>{item.pages} pages</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <FileText className="h-3 w-3" />
+                        {item.language}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 mt-4">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => window.open(item.thumbnail, "_blank")}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        View
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => {
+                          const link = document.createElement("a");
+                          link.href = item.fileUrl;
+                          link.download = item.title + ".pdf";
+                          link.click();
+                        }}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
           </div>
         </div>
 
@@ -257,13 +288,26 @@ const DigitalArchives = () => {
             <div className="flex flex-col md:flex-row gap-4">
               <Input placeholder="Institution/University" className="flex-1" />
               <Input placeholder="Research Purpose" className="flex-1" />
-              <Button>
-                Submit Request
-              </Button>
+              <Button onClick={() => setIsRequestModalOpen(true)}>Submit Request</Button>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal for Submit Request */}
+      <Dialog open={isRequestModalOpen} onOpenChange={setIsRequestModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Access Request Submitted</DialogTitle>
+          </DialogHeader>
+          <p className="mt-2 text-muted-foreground">
+            Your request for access has been received. We’ll review it and contact you shortly.
+          </p>
+          <div className="mt-4 text-right">
+            <Button onClick={() => setIsRequestModalOpen(false)}>Close</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
