@@ -1,14 +1,16 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, Globe, Users, Shield, Award, BookOpen } from "lucide-react";
+import { Heart, Globe, Users, Shield, Award, BookOpen, Quote } from "lucide-react";
+import CountUp from "react-countup";
+import { motion } from "framer-motion";
 
 const About = () => {
   const stats = [
-    { number: "25+", label: "Sacred Monasteries", icon: Heart },
-    { number: "6", label: "Languages Supported", icon: Globe },
-    { number: "10K+", label: "Visitors Served", icon: Users },
-    { number: "500+", label: "Years of Heritage", icon: BookOpen },
+    { number: 25, suffix: "+", label: "Sacred Monasteries", icon: Heart },
+    { number: 6, suffix: "", label: "Languages Supported", icon: Globe },
+    { number: 10000, suffix: "+", label: "Visitors Served", icon: Users },
+    { number: 500, suffix: "+", label: "Years of Heritage", icon: BookOpen },
   ];
 
   const team = [
@@ -16,19 +18,34 @@ const About = () => {
       name: "Dr. Karma Lama",
       role: "Cultural Heritage Director",
       bio: "Buddhist scholar and monastery preservation expert with 20 years of experience.",
-      image: "/placeholder.svg"
+      image: "/a.jpeg"
     },
     {
       name: "Pema Sherpa",
       role: "Local Community Liaison",
       bio: "Born in Sikkim, connecting traditional wisdom with modern digital preservation.",
-      image: "/placeholder.svg"
+      image: "/a1.jpeg"
     },
     {
       name: "Sarah Chen",
       role: "Technology Lead",
       bio: "Specializes in immersive technologies and cultural digitization projects.",
-      image: "/placeholder.svg"
+      image: "/a2.jpeg"
+    }
+  ];
+
+  const testimonials = [
+    {
+      quote: "Monastery360 helped me connect with my heritage even while living abroad.",
+      author: "Tenzin, New York"
+    },
+    {
+      quote: "A beautiful initiative that preserves culture while embracing technology.",
+      author: "Sonam, Sikkim"
+    },
+    {
+      quote: "The digital tours are breathtaking — I felt like I was there in person.",
+      author: "Emily, London"
     }
   ];
 
@@ -37,7 +54,13 @@ const About = () => {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-background py-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
+          <motion.div 
+            className="max-w-4xl mx-auto text-center"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
             <h1 className="font-display text-4xl md:text-6xl font-bold text-primary mb-6">
               Preserving Sacred Heritage
             </h1>
@@ -45,17 +68,23 @@ const About = () => {
               Monastery360 bridges ancient wisdom with modern technology, making Sikkim's 
               spiritual treasures accessible to the world while preserving them for future generations.
             </p>
-            <div className="text-2xl font-display text-accent italic mb-8">
+            <div className="text-2xl font-display italic bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent mb-6 drop-shadow">
               "Digitizing today, preserving forever."
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Mission Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+          <motion.div 
+            className="max-w-4xl mx-auto"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
               <div>
                 <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-6">
@@ -87,7 +116,7 @@ const About = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-lg" />
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -105,13 +134,23 @@ const About = () => {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <Card key={index} className="text-center">
-                <CardContent className="pt-6">
-                  <stat.icon className="w-8 h-8 text-accent mx-auto mb-4" />
-                  <div className="text-3xl font-bold text-primary mb-2">{stat.number}</div>
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                </CardContent>
-              </Card>
+              <motion.div 
+                key={index} 
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                viewport={{ once: true }}
+              >
+                <Card className="text-center transition-transform transform hover:scale-105 hover:-translate-y-1 hover:shadow-xl">
+                  <CardContent className="pt-6">
+                    <stat.icon className="w-8 h-8 text-black mx-auto mb-4" />
+                    <div className="text-3xl font-bold text-primary mb-2">
+                      <CountUp end={stat.number} duration={2} />{stat.suffix}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -131,83 +170,64 @@ const About = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {team.map((member, index) => (
-              <Card key={index} className="text-center">
-                <CardHeader>
-                  <div className="w-24 h-24 rounded-full bg-gradient-primary mx-auto mb-4 overflow-hidden">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <CardTitle className="text-xl">{member.name}</CardTitle>
-                  <CardDescription className="text-accent font-medium">
-                    {member.role}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{member.bio}</p>
-                </CardContent>
-              </Card>
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                viewport={{ once: true }}
+              >
+                <Card className="text-center transition-transform transform hover:scale-105 hover:-translate-y-1 hover:shadow-xl">
+                  <CardHeader>
+                    <div className="w-24 h-24 rounded-full bg-gradient-primary mx-auto mb-4 overflow-hidden">
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <CardTitle className="text-xl">{member.name}</CardTitle>
+                    <CardDescription className="text-accent font-medium">
+                      {member.role}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">{member.bio}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Partners Section */}
-      <section className="py-16 bg-muted/50">
+      {/* Testimonials Section */}
+      <section className="py-16 bg-gradient-to-br from-primary/5 via-background to-background">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-12">
+          <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-4">
-              Our Partners
+              Voices from the Community
             </h2>
             <p className="text-lg text-muted-foreground">
-              Working together to preserve and share Sikkim's cultural heritage
+              Hear from those who have experienced our mission
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Government of Sikkim",
-                description: "Official support and cultural guidance",
-                icon: Shield
-              },
-              {
-                name: "Dept. of Higher & Technical Education",
-                description: "Educational partnerships and research collaboration",
-                icon: BookOpen
-              },
-              {
-                name: "Local Monastery Communities",
-                description: "Authentic content and spiritual guidance",
-                icon: Heart
-              },
-              {
-                name: "Tourism Board of Sikkim",
-                description: "Promoting sustainable and responsible tourism",
-                icon: Globe
-              },
-              {
-                name: "UNESCO Cultural Heritage",
-                description: "International preservation standards",
-                icon: Award
-              },
-              {
-                name: "Local Guide Associations",
-                description: "Expert knowledge and community support",
-                icon: Users
-              }
-            ].map((partner, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <partner.icon className="w-8 h-8 text-accent mb-2" />
-                  <CardTitle className="text-lg">{partner.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{partner.description}</p>
-                </CardContent>
-              </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((t, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                viewport={{ once: true }}
+              >
+                <Card className="relative p-6 text-center shadow-lg rounded-2xl">
+                  <Quote className="w-6 h-6 text-primary mx-auto mb-4" />
+                  <p className="italic text-muted-foreground mb-4">"{t.quote}"</p>
+                  <p className="font-semibold text-primary">— {t.author}</p>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -216,7 +236,13 @@ const About = () => {
       {/* CTA Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
+          <motion.div 
+            className="max-w-4xl mx-auto text-center"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
             <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-4">
               Join Our Mission
             </h2>
@@ -233,7 +259,7 @@ const About = () => {
                 <Users className="w-5 h-5 ml-2" />
               </Button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
     </div>
