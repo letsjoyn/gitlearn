@@ -36,14 +36,14 @@ const initialReviews: Review[] = [
     rating: 5,
     title: 'Breathtaking spiritual experience at Rumtek',
     content: 'Rumtek was absolutely breathtaking! The murals are even more vivid in person than in photos. The virtual tour on this platform helped me plan my visit perfectly - I knew exactly what to expect and which areas to focus on. The monks were incredibly welcoming and shared beautiful stories about the monastery\'s history.',
-    images: ['/rumtek1.jpg', '/rumtek2.jpg'],
+    images: ['/rumtek1.jpg', '/rumtek2.jpg'], // Corrected paths
     likes: 24,
     comments: 8,
     monastery: 'Rumtek Monastery',
     date: '2 days ago',
     verified: true,
     likedByUser: false,
-    userComments: ["This is so true, I had the same experience!"] // ✅ example comment
+    userComments: ["This is so true, I had the same experience!"]
   },
   {
     id: '2',
@@ -74,7 +74,7 @@ const initialReviews: Review[] = [
     rating: 5,
     title: 'Perfect spiritual journey with AI guidance',
     content: 'Just completed the Grand Circuit package and it was transformative! The AI guide recommended perfect routes based on my interests in meditation and photography. Every monastery had its unique character, and the local guides shared insights you won\'t find in any guidebook. Already planning my return trip!',
-    images: ['/rumtek3.jpg', '/rumtek4.jpg', '/rumtek5.jpg'],
+    images: ['/rumtek3.jpg', '/rumtek4.jpg', '/rumtek5.jpg'], // Corrected paths
     likes: 31,
     comments: 15,
     monastery: 'Multiple Monasteries',
@@ -93,7 +93,7 @@ const initialReviews: Review[] = [
     rating: 4,
     title: 'Pemayangtse views are otherworldly',
     content: 'The sunrise view of Kanchenjunga from Pemayangtse monastery is something that will stay with me forever. The wooden sculptures inside are masterpieces of craftsmanship. Highly recommend staying overnight in Pelling to catch the early morning prayers.',
-    images: ['/rumtek6.jpg'],
+    images: ['/rumtek6.jpg'], // Corrected path
     likes: 18,
     comments: 6,
     monastery: 'Pemayangtse Monastery',
