@@ -18,19 +18,19 @@ const About = () => {
       name: "Dr. Karma Lama",
       role: "Cultural Heritage Director",
       bio: "Buddhist scholar and monastery preservation expert with 20 years of experience.",
-      image: "/a.jpeg"
+      image: "/a.jpg"
     },
     {
       name: "Pema Sherpa",
       role: "Local Community Liaison",
       bio: "Born in Sikkim, connecting traditional wisdom with modern digital preservation.",
-      image: "/a1.jpeg"
+      image: "/a1.jpg"
     },
     {
       name: "Sarah Chen",
       role: "Technology Lead",
       bio: "Specializes in immersive technologies and cultural digitization projects.",
-      image: "/a2.jpeg"
+      image: "/a2.jpg"
     }
   ];
 
