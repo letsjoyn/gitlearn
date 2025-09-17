@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import L, { LatLngTuple, PointTuple } from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+
+// Fix default marker icons for Vite/Next builds
+import "leaflet-defaulticon-compatibility";
+import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 
 // UI imports
 import { MapPin, Clock, Car, Star, Info, Navigation } from "lucide-react";
@@ -107,11 +114,53 @@ const monasteries: Monastery[] = [
 ];
 
 // ----------------------
+// Custom 3D-like marker (DivIcon)
+// ----------------------
+const monasteryIcon = new L.DivIcon({
+  html: `
+    <div style="
+      width:36px;height:36px;
+      display:flex;align-items:center;justify-content:center;
+      border-radius:10px;
+      background:linear-gradient(135deg,#f59e0b,#f97316);
+      box-shadow:0 6px 14px rgba(2,6,23,0.45);
+      border:2px solid rgba(255,255,255,0.9);
+      transform:translateY(-6px);
+    ">
+      <span style="font-size:18px;line-height:18px">🏯</span>
+    </div>
+  `,
+  className: "monastery-div-icon",
+  iconSize: [36, 36] as PointTuple,
+  iconAnchor: [18, 36] as PointTuple,
+  popupAnchor: [0, -36] as PointTuple,
+});
+
+// ----------------------
+// Helper: fly map to selected monastery
+// ----------------------
+function FlyToMonastery({ coords }: { coords: LatLngTuple | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (coords) {
+      try {
+        map.flyTo(coords, 12, { duration: 0.7 });
+      } catch {
+        // ignore
+      }
+    }
+  }, [coords, map]);
+  return null;
+}
+
+// ----------------------
 // Main component
 // ----------------------
 const InteractiveMap: React.FC = () => {
   const [selectedMonastery, setSelectedMonastery] = useState<Monastery | null>(null);
-  const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+  const [viewMode, setViewMode] = useState<"list" | "map">("map");
+
+  const sikkimCenter: LatLngTuple = [27.5, 88.5];
 
   return (
     <section className="py-20 px-4 bg-gradient-heritage">
@@ -130,7 +179,7 @@ const InteractiveMap: React.FC = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Map/List view */}
           <div className="lg:col-span-2">
-            <Card className="card-heritage">
+            <Card className="card-heritage h-[600px]">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="font-heading text-2xl text-primary flex items-center">
@@ -139,11 +188,11 @@ const InteractiveMap: React.FC = () => {
                   </CardTitle>
                   <div className="flex space-x-2">
                     <Button
-                      variant={viewMode === "grid" ? "default" : "outline"}
+                      variant={viewMode === "map" ? "default" : "outline"}
                       size="sm"
-                      onClick={() => setViewMode("grid")}
+                      onClick={() => setViewMode("map")}
                     >
-                      Grid View
+                      Map View
                     </Button>
                     <Button
                       variant={viewMode === "list" ? "default" : "outline"}
@@ -157,52 +206,53 @@ const InteractiveMap: React.FC = () => {
               </CardHeader>
 
               <CardContent>
-                {viewMode === "grid" ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {monasteries.map((monastery) => (
-                      <Card
-                        key={monastery.id}
-                        className={`cursor-pointer transition-all duration-300 hover:shadow-saffron ${
-                          selectedMonastery?.id === monastery.id
-                            ? "ring-2 ring-saffron bg-accent/30"
-                            : ""
-                        }`}
-                        onClick={() => setSelectedMonastery(monastery)}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-heading text-lg font-semibold text-primary">
-                              {monastery.name}
-                            </h3>
-                            <div className="flex items-center space-x-1">
-                              <Star className="h-4 w-4 fill-saffron text-saffron" />
-                              <span className="text-sm font-medium">
-                                {monastery.rating}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-muted-foreground text-sm mb-2">
-                            {monastery.description}
-                          </p>
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <div className="flex items-center">
-                              <Clock className="h-3 w-3 mr-1" />
-                              {monastery.travelTime}
-                            </div>
-                            <div className="flex items-center">
-                              <MapPin className="h-3 w-3 mr-1" />
-                              {monastery.nearestTown}
-                            </div>
-                          </div>
-                          <div className="mt-3 text-xs text-muted-foreground">
-                            <span>Coordinates: {monastery.coordinates.lat}, {monastery.coordinates.lng}</span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                {viewMode === "map" ? (
+                  <div className="h-[500px] w-full rounded-xl overflow-hidden shadow">
+                    <MapContainer
+                      center={sikkimCenter}
+                      zoom={8}
+                      style={{ height: "100%", width: "100%" }}
+                      scrollWheelZoom
+                    >
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      />
+
+                      <FlyToMonastery
+                        coords={
+                          selectedMonastery
+                            ? [selectedMonastery.coordinates.lat, selectedMonastery.coordinates.lng] as [number, number]
+                            : null
+                        }
+                      />
+
+                      {monasteries.map((m) => (
+                        <Marker
+                          key={m.id}
+                          position={[m.coordinates.lat, m.coordinates.lng]}
+                          icon={monasteryIcon}
+                          eventHandlers={{
+                            click: () => setSelectedMonastery(m),
+                            mouseover: (e: L.LeafletMouseEvent) => {
+                              (e.target as L.Marker).openPopup();
+                            },
+                            mouseout: (e: L.LeafletMouseEvent) => {
+                              (e.target as L.Marker).closePopup();
+                            },
+                          }}
+                        >
+                          <Popup>
+                            <strong>{m.name}</strong>
+                            <br />
+                            <small>{m.nearestTown}</small>
+                          </Popup>
+                        </Marker>
+                      ))}
+                    </MapContainer>
                   </div>
                 ) : (
-                  <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                  <div className="space-y-4 h-full overflow-y-auto">
                     {monasteries.map((monastery) => (
                       <Card
                         key={monastery.id}
