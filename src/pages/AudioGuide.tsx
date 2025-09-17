@@ -13,8 +13,6 @@ const AudioGuide = () => {
   const { mode } = useMode();
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("english");
-  // Set the first guide as the default to make the player visible on load
-  const [currentGuide, setCurrentGuide] = useState(null);
   const [currentTime, setCurrentTime] = useState(0);
   const audioRef = useRef(null);
   const [volume, setVolume] = useState(1);
@@ -63,7 +61,7 @@ const AudioGuide = () => {
       duration: 25,
       languages: ["english", "hindi", "nepali"],
       downloadUrl: "/audio/pemayangtse-sunrise.mp3",
-      image: "/rumtek2.jpg",
+      image: "/rumtek3.jpg",
       offline: true,
       gpsEnabled: true,
       bluetoothBeacons: false,
@@ -102,7 +100,7 @@ const AudioGuide = () => {
         english: "Sacred Geography Tour",
         hindi: "पवित्र भूगोल यात्रा",
         nepali: "पवित्र भूगोल यात्रा",
-        tibetan: "དགོན་པའི་ས་ཆའི་ལམ་འཛུལ།"
+        tibetan: "དགོན་པའི་ས་ཆའི་ལམ་འཛུལ་།"
       },
       description: {
         english: "Explore the monastery's connection to Himalayan sacred landscapes",
@@ -113,7 +111,7 @@ const AudioGuide = () => {
       duration: 30,
       languages: ["english", "hindi", "nepali"],
       downloadUrl: "/audio/tashiding-tour.mp3",
-      image: "/rumtek5.jpg",
+      image: "/rumtek2.jpg",
       offline: true,
       gpsEnabled: true,
       bluetoothBeacons: false,
@@ -121,6 +119,9 @@ const AudioGuide = () => {
       downloadSize: "48 MB"
     }
   ];
+
+  // Set the first guide as the default to make the player visible on initial load
+  const [currentGuide, setCurrentGuide] = useState(audioGuides[0]);
 
   const features = [
     { title: "GPS Location Awareness", description: "Automatically triggers relevant audio content based on your precise location within the monastery grounds", icon: Navigation, available: true },
@@ -136,7 +137,6 @@ const AudioGuide = () => {
     { code: "tibetan", name: "བོད་ཡིག་", flag: "🏔" }
   ];
 
-  // Effect to handle time updates
   useEffect(() => {
     const interval = setInterval(() => {
       if (audioRef.current && isPlaying) setCurrentTime(audioRef.current.currentTime);
@@ -144,9 +144,7 @@ const AudioGuide = () => {
     return () => clearInterval(interval);
   }, [isPlaying]);
 
-  // Handler to play/pause audio and select a new guide
   const handlePlayPause = (guide) => {
-    // If a different guide is selected, update and play it
     if (currentGuide?.id !== guide.id) {
       setCurrentGuide(guide);
       setTimeout(() => { 
@@ -157,7 +155,6 @@ const AudioGuide = () => {
         }
       }, 100);
     } else {
-      // Otherwise, toggle play/pause for the current guide
       if (isPlaying) { 
         audioRef.current?.pause(); 
         setIsPlaying(false); 
@@ -168,7 +165,6 @@ const AudioGuide = () => {
     }
   };
 
-  // Handler to control the audio volume
   const handleVolumeChange = (e) => {
     const newVolume = parseFloat(e.target.value);
     if (audioRef.current) {
@@ -312,7 +308,6 @@ const AudioGuide = () => {
                 <Button variant="outline" size="sm"><SkipForward className="h-4 w-4" /></Button>
               </div>
               <div className="flex items-center justify-between">
-                {/* Volume control added here */}
                 <div className="flex items-center gap-2">
                   <Volume2 className="h-4 w-4" />
                   <input
