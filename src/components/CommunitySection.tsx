@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Star, Camera, Heart, MessageCircle, Upload, Filter } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ interface Review {
   user: {
     name: string;
     avatar: string;
-    type: 'visitor' | 'local' | 'monk';
+    type: "visitor" | "local" | "monk";
   };
   rating: number;
   title: string;
@@ -21,9 +21,11 @@ interface Review {
   monastery: string;
   date: string;
   verified: boolean;
+  likedByUser?: boolean;
+  userComments?: string[];
 }
 
-const reviews: Review[] = [
+const initialReviews: Review[] = [
   {
     id: '1',
     user: {
@@ -34,12 +36,14 @@ const reviews: Review[] = [
     rating: 5,
     title: 'Breathtaking spiritual experience at Rumtek',
     content: 'Rumtek was absolutely breathtaking! The murals are even more vivid in person than in photos. The virtual tour on this platform helped me plan my visit perfectly - I knew exactly what to expect and which areas to focus on. The monks were incredibly welcoming and shared beautiful stories about the monastery\'s history.',
-    images: ['/api/placeholder/300/200', '/api/placeholder/300/200'],
+    images: ['/rumtek1.jpg', '/rumtek2.jpg'], // Corrected paths
     likes: 24,
     comments: 8,
     monastery: 'Rumtek Monastery',
     date: '2 days ago',
-    verified: true
+    verified: true,
+    likedByUser: false,
+    userComments: ["This is so true, I had the same experience!"]
   },
   {
     id: '2',
@@ -56,7 +60,9 @@ const reviews: Review[] = [
     comments: 12,
     monastery: 'Multiple Monasteries',
     date: '1 week ago',
-    verified: true
+    verified: true,
+    likedByUser: false,
+    userComments: ["A very thoughtful and important project."]
   },
   {
     id: '3',
@@ -68,12 +74,14 @@ const reviews: Review[] = [
     rating: 5,
     title: 'Perfect spiritual journey with AI guidance',
     content: 'Just completed the Grand Circuit package and it was transformative! The AI guide recommended perfect routes based on my interests in meditation and photography. Every monastery had its unique character, and the local guides shared insights you won\'t find in any guidebook. Already planning my return trip!',
-    images: ['/api/placeholder/300/200', '/api/placeholder/300/200', '/api/placeholder/300/200'],
+    images: ['/rumtek3.jpg', '/rumtek4.jpg', '/rumtek5.jpg'], // Corrected paths
     likes: 31,
     comments: 15,
     monastery: 'Multiple Monasteries',
     date: '3 days ago',
-    verified: true
+    verified: true,
+    likedByUser: false,
+    userComments: ["I'm looking forward to trying this too!"]
   },
   {
     id: '4',
@@ -85,72 +93,151 @@ const reviews: Review[] = [
     rating: 4,
     title: 'Pemayangtse views are otherworldly',
     content: 'The sunrise view of Kanchenjunga from Pemayangtse monastery is something that will stay with me forever. The wooden sculptures inside are masterpieces of craftsmanship. Highly recommend staying overnight in Pelling to catch the early morning prayers.',
-    images: ['/api/placeholder/300/200'],
+    images: ['/rumtek6.jpg'], // Corrected path
     likes: 18,
     comments: 6,
     monastery: 'Pemayangtse Monastery',
     date: '5 days ago',
-    verified: true
+    verified: true,
+    likedByUser: false,
+    userComments: ["The sunrise there is truly magical."]
   }
 ];
 
 const CommunitySection = () => {
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'visitor' | 'local' | 'monk'>('all');
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+  const [selectedFilter, setSelectedFilter] = useState<"all" | "visitor" | "local" | "monk">("all");
   const [showUploadForm, setShowUploadForm] = useState(false);
 
-  const filteredReviews = selectedFilter === 'all' 
-    ? reviews 
-    : reviews.filter(review => review.user.type === selectedFilter);
+  // Upload form state
+  const [name, setName] = useState("");
+  const [monastery, setMonastery] = useState("");
+  const [title, setTitle] = useState("");
+  const [story, setStory] = useState("");
+  const [rating, setRating] = useState(0);
+  const [photos, setPhotos] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Comment state
+  const [activeCommentBox, setActiveCommentBox] = useState<string | null>(null);
+  const [commentInput, setCommentInput] = useState<Record<string, string>>({});
+
+  const filteredReviews =
+    selectedFilter === "all" ? reviews : reviews.filter((r) => r.user.type === selectedFilter);
 
   const getUserBadgeColor = (type: string) => {
     switch (type) {
-      case 'monk': return 'bg-gradient-to-r from-saffron-dark to-saffron text-primary';
-      case 'local': return 'bg-gradient-to-r from-green-500 to-green-600 text-white';
-      default: return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white';
+      case "monk":
+        return "bg-gradient-to-r from-saffron-dark to-saffron text-primary";
+      case "local":
+        return "bg-gradient-to-r from-green-500 to-green-600 text-white";
+      default:
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white";
     }
   };
 
   const getUserTypeLabel = (type: string) => {
     switch (type) {
-      case 'monk': return 'Monk';
-      case 'local': return 'Local Guide';
-      default: return 'Visitor';
+      case "monk":
+        return "Monk";
+      case "local":
+        return "Local Guide";
+      default:
+        return "Visitor";
     }
+  };
+
+  const handleLike = (id: string) => {
+    setReviews((prev) =>
+      prev.map((r) =>
+        r.id === id
+          ? { ...r, likedByUser: !r.likedByUser, likes: r.likedByUser ? r.likes - 1 : r.likes + 1 }
+          : r
+      )
+    );
+  };
+
+  const toggleCommentBox = (id: string) => {
+    setActiveCommentBox((prev) => (prev === id ? null : id));
+  };
+
+  const handlePostComment = (id: string) => {
+    const text = (commentInput[id] || "").trim();
+    if (!text) return;
+    setReviews((prev) =>
+      prev.map((r) =>
+        r.id === id
+          ? { ...r, comments: r.comments + 1, userComments: [...(r.userComments || []), text] }
+          : r
+      )
+    );
+    setCommentInput((prev) => ({ ...prev, [id]: "" }));
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    setPhotos(Array.from(e.target.files));
+  };
+
+  const handleSubmitExperience = () => {
+    if (!name.trim() || !title.trim() || !story.trim() || !monastery.trim() || rating === 0) {
+      alert("Please fill out all required fields and give a rating.");
+      return;
+    }
+
+    const newReview: Review = {
+      id: String(Date.now()),
+      user: { name: name.trim(), avatar: "/api/placeholder/40/40", type: "visitor" },
+      rating,
+      title: title.trim(),
+      content: story.trim(),
+      images: photos.map((f) => URL.createObjectURL(f)),
+      likes: 0,
+      comments: 0,
+      monastery,
+      date: "Just now",
+      verified: true,
+      likedByUser: false,
+      userComments: [],
+    };
+
+    setReviews((prev) => [newReview, ...prev]);
+    setName("");
+    setMonastery("");
+    setTitle("");
+    setStory("");
+    setRating(0);
+    setPhotos([]);
+    setShowUploadForm(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   return (
     <section className="py-20 px-4 bg-background">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-primary mb-6">
-            Community Stories
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Share your spiritual journey and connect with fellow travelers exploring Sikkim's sacred heritage
-          </p>
-        </div>
-
-        {/* Filters and Upload */}
+        {/* Filters + Upload */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-12 gap-4">
           <div className="flex items-center space-x-2">
             <Filter className="h-5 w-5 text-muted-foreground" />
             <div className="flex space-x-2">
-              {['all', 'visitor', 'local', 'monk'].map((filter) => (
+              {["all", "visitor", "local", "monk"].map((filter) => (
                 <Button
                   key={filter}
-                  variant={selectedFilter === filter ? 'default' : 'outline'}
+                  variant={selectedFilter === filter ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedFilter(filter as any)}
-                  className={selectedFilter === filter ? 'bg-primary text-primary-foreground' : ''}
+                  className={selectedFilter === filter ? "bg-primary text-primary-foreground" : ""}
                 >
-                  {filter.charAt(0).toUpperCase() + filter.slice(1)}
-                  {filter === 'all' ? ` (${reviews.length})` : ` (${reviews.filter(r => r.user.type === filter).length})`}
+                  {filter.charAt(0).toUpperCase() + filter.slice(1)}{" "}
+                  {filter === "all"
+                    ? `(${reviews.length})`
+                    : `(${reviews.filter((r) => r.user.type === filter).length})`}
                 </Button>
               ))}
             </div>
           </div>
 
-          <Button 
+          <Button
             onClick={() => setShowUploadForm(!showUploadForm)}
             className="bg-gradient-to-r from-saffron to-saffron-light text-primary hover:shadow-saffron transition-all duration-300"
           >
@@ -161,79 +248,89 @@ const CommunitySection = () => {
 
         {/* Upload Form */}
         {showUploadForm && (
-          <Card className="card-heritage mb-12 animate-fade-in">
+          <Card className="mb-12 animate-fade-in">
             <CardHeader>
               <h3 className="font-heading text-xl text-primary">Share Your Monastery Experience</h3>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-primary mb-2">
-                      Your Name
-                    </label>
-                    <input 
-                      type="text" 
-                      placeholder="Enter your name"
-                      className="w-full p-3 border border-border rounded-xl focus:ring-2 focus:ring-saffron focus:border-transparent"
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name"
+                  className="w-full p-3 border rounded-xl"
+                />
+                <select
+                  value={monastery}
+                  onChange={(e) => setMonastery(e.target.value)}
+                  className="w-full p-3 border rounded-xl"
+                >
+                  <option value="">Select monastery</option>
+                  <option>Rumtek Monastery</option>
+                  <option>Pemayangtse Monastery</option>
+                  <option>Tashiding Monastery</option>
+                  <option>Enchey Monastery</option>
+                  <option>Other</option>
+                </select>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Experience title"
+                  className="w-full p-3 border rounded-xl"
+                />
+                <textarea
+                  rows={4}
+                  value={story}
+                  onChange={(e) => setStory(e.target.value)}
+                  placeholder="Share your story..."
+                  className="w-full p-3 border rounded-xl resize-none"
+                />
+                <div className="flex items-center space-x-2">
+                  <span>Rating:</span>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      onClick={() => setRating(star)}
+                      className={`h-5 w-5 cursor-pointer ${
+                        rating >= star ? "fill-saffron text-saffron" : "text-muted-foreground"
+                      }`}
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-primary mb-2">
-                      Monastery Visited
-                    </label>
-                    <select className="w-full p-3 border border-border rounded-xl focus:ring-2 focus:ring-saffron focus:border-transparent">
-                      <option>Select monastery</option>
-                      <option>Rumtek Monastery</option>
-                      <option>Pemayangtse Monastery</option>
-                      <option>Tashiding Monastery</option>
-                      <option>Enchey Monastery</option>
-                      <option>Other</option>
-                    </select>
-                  </div>
+                  ))}
                 </div>
-                
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-2">
-                    Experience Title
-                  </label>
-                  <input 
-                    type="text" 
-                    placeholder="Give your experience a title"
-                    className="w-full p-3 border border-border rounded-xl focus:ring-2 focus:ring-saffron focus:border-transparent"
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePhotoUpload}
                   />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-primary mb-2">
-                    Share Your Story
-                  </label>
-                  <textarea 
-                    rows={4}
-                    placeholder="Tell us about your experience..."
-                    className="w-full p-3 border border-border rounded-xl focus:ring-2 focus:ring-saffron focus:border-transparent resize-none"
-                  />
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-semibold text-primary">Rating:</span>
-                    <div className="flex space-x-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} className="h-5 w-5 text-saffron cursor-pointer hover:fill-saffron" />
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
                     <Camera className="h-4 w-4 mr-2" />
                     Add Photos
                   </Button>
                 </div>
-                
+                {photos.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {photos.map((file, i) => (
+                      <img
+                        key={i}
+                        src={URL.createObjectURL(file)}
+                        alt={`preview-${i}`}
+                        className="rounded-lg object-cover w-full h-32"
+                      />
+                    ))}
+                  </div>
+                )}
                 <div className="flex space-x-3">
-                  <Button className="bg-gradient-to-r from-saffron to-saffron-light text-primary">
-                    Share Experience
+                  <Button
+                    className="bg-gradient-to-r from-saffron to-saffron-light text-primary"
+                    onClick={handleSubmitExperience}
+                  >
+                    Share
                   </Button>
                   <Button variant="outline" onClick={() => setShowUploadForm(false)}>
                     Cancel
@@ -247,13 +344,22 @@ const CommunitySection = () => {
         {/* Reviews Grid */}
         <div className="grid md:grid-cols-2 gap-8">
           {filteredReviews.map((review, index) => (
-            <Card key={review.id} className="card-heritage animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+            <Card
+              key={review.id}
+              className="animate-fade-in"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <Avatar>
                       <AvatarImage src={review.user.avatar} alt={review.user.name} />
-                      <AvatarFallback>{review.user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      <AvatarFallback>
+                        {review.user.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </AvatarFallback>
                     </Avatar>
                     <div>
                       <div className="flex items-center space-x-2">
@@ -267,11 +373,11 @@ const CommunitySection = () => {
                       <div className="flex items-center space-x-2 mt-1">
                         <div className="flex">
                           {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
+                            <Star
+                              key={i}
                               className={`h-4 w-4 ${
-                                i < review.rating ? 'fill-saffron text-saffron' : 'text-muted-foreground'
-                              }`} 
+                                i < review.rating ? "fill-saffron text-saffron" : "text-muted-foreground"
+                              }`}
                             />
                           ))}
                         </div>
@@ -281,25 +387,17 @@ const CommunitySection = () => {
                   </div>
                 </div>
               </CardHeader>
-              
+
               <CardContent>
                 <h3 className="font-heading text-lg font-semibold text-primary mb-2">
                   {review.title}
                 </h3>
-                
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  {review.content}
-                </p>
-                
+                <p className="text-muted-foreground mb-4">{review.content}</p>
                 {review.images.length > 0 && (
                   <div className="grid grid-cols-2 gap-2 mb-4">
-                    {review.images.slice(0, 2).map((image, idx) => (
-                      <div key={idx} className="aspect-video bg-muted rounded-lg overflow-hidden">
-                        <img 
-                          src={image} 
-                          alt={`Experience photo ${idx + 1}`}
-                          className="w-full h-full object-cover"
-                        />
+                    {review.images.slice(0, 2).map((img, idx) => (
+                      <div key={idx} className="aspect-video rounded-lg overflow-hidden">
+                        <img src={img} alt={`photo-${idx}`} className="w-full h-full object-cover" />
                       </div>
                     ))}
                     {review.images.length > 2 && (
@@ -311,23 +409,60 @@ const CommunitySection = () => {
                     )}
                   </div>
                 )}
-                
-                <div className="flex items-center justify-between pt-4 border-t border-border">
+                <div className="flex items-center justify-between pt-4 border-t">
                   <Badge variant="outline" className="text-xs">
                     {review.monastery}
                   </Badge>
-                  
-                  <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                    <button className="flex items-center space-x-1 hover:text-saffron transition-colors">
-                      <Heart className="h-4 w-4" />
+                  <div className="flex items-center space-x-4 text-sm">
+                    <button onClick={() => handleLike(review.id)}>
+                      <Heart
+                        className={`h-4 w-4 ${
+                          review.likedByUser ? "fill-red-500 text-red-500" : "hover:text-saffron"
+                        }`}
+                      />
                       <span>{review.likes}</span>
                     </button>
-                    <button className="flex items-center space-x-1 hover:text-saffron transition-colors">
+                    <button onClick={() => toggleCommentBox(review.id)}>
                       <MessageCircle className="h-4 w-4" />
                       <span>{review.comments}</span>
                     </button>
                   </div>
                 </div>
+                {review.userComments?.length > 0 && (
+                  <div className="mt-3 space-y-1 text-sm text-muted-foreground">
+                    {review.userComments.map((c, i) => (
+                      <p key={i}>💬 {c}</p>
+                    ))}
+                  </div>
+                )}
+                {activeCommentBox === review.id && (
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      value={commentInput[review.id] || ""}
+                      onChange={(e) =>
+                        setCommentInput((prev) => ({ ...prev, [review.id]: e.target.value }))
+                      }
+                      placeholder="Write a comment..."
+                      className="w-full p-2 border rounded-lg text-sm"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handlePostComment(review.id);
+                        }
+                      }}
+                    />
+                    <div className="flex justify-end mt-2">
+                      <Button
+                        size="sm"
+                        className="bg-gradient-to-r from-saffron to-saffron-light text-primary"
+                        onClick={() => handlePostComment(review.id)}
+                      >
+                        Post Comment
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
