@@ -19,50 +19,55 @@ import CulturalCalendar from "./pages/CulturalCalendar";
 import AudioGuide from "./pages/AudioGuide";
 import NotFound from "./pages/NotFound";
 
+// ✅ import AuthProvider
+import { AuthProvider } from "./context/AuthContext";
+
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <ModeProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <div className="min-h-screen flex flex-col">
-            <EnhancedHeader />
-            <main className="flex-1">
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/virtual-tours" element={<VirtualTours />} />
-                <Route path="/monasteries" element={<Monasteries />} />
-                <Route path="/booking" element={<Booking />} />
-                <Route path="/community" element={<Community />} />
-                <Route path="/about" element={<About />} />
-                
-                {/* Digital Archives Routes */}
-                <Route path="/archives/*" element={<DigitalArchives />} />
-                <Route path="/archives/manuscripts" element={<DigitalArchives />} />
-                <Route path="/archives/search" element={<DigitalArchives />} />
-                <Route path="/archives/download" element={<DigitalArchives />} />
-                <Route path="/archives/access" element={<DigitalArchives />} />
-                
-                {/* Cultural Calendar Routes */}
-                <Route path="/calendar" element={<CulturalCalendar />} />
-                <Route path="/calendar/booking" element={<CulturalCalendar />} />
-                <Route path="/calendar/submit" element={<CulturalCalendar />} />
-                
-                {/* Audio Guide Routes */}
-                <Route path="/audio-guide" element={<AudioGuide />} />
-                <Route path="/audio-guide/offline" element={<AudioGuide />} />
-                
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <Footer />
-            <AIAssistant />
-            <AIResearchAgent />
-          </div>
-        </BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <div className="min-h-screen flex flex-col">
+              <EnhancedHeader />
+              <main className="flex-1">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/virtual-tours" element={<VirtualTours />} />
+                  <Route path="/monasteries" element={<Monasteries />} />
+                  <Route path="/booking" element={<Booking />} />
+                  <Route path="/community" element={<Community />} />
+                  <Route path="/about" element={<About />} />
+                  
+                  {/* Digital Archives Routes */}
+                  <Route path="/archives/*" element={<DigitalArchives />} />
+                  <Route path="/archives/manuscripts" element={<DigitalArchives />} />
+                  <Route path="/archives/search" element={<DigitalArchives />} />
+                  <Route path="/archives/download" element={<DigitalArchives />} />
+                  <Route path="/archives/access" element={<DigitalArchives />} />
+                  
+                  {/* Cultural Calendar Routes */}
+                  <Route path="/calendar" element={<CulturalCalendar />} />
+                  <Route path="/calendar/booking" element={<CulturalCalendar />} />
+                  <Route path="/calendar/submit" element={<CulturalCalendar />} />
+                  
+                  {/* Audio Guide Routes */}
+                  <Route path="/audio-guide" element={<AudioGuide />} />
+                  <Route path="/audio-guide/offline" element={<AudioGuide />} />
+                  
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+              <Footer />
+              <AIAssistant />
+              <AIResearchAgent />
+            </div>
+          </BrowserRouter>
+        </AuthProvider>
       </ModeProvider>
     </TooltipProvider>
   </QueryClientProvider>

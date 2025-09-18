@@ -2,10 +2,14 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";   // ✅ NEW
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // ✅ NEW
 
 const Header = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, login, logout, role, setRole } = useAuth();   // ✅ NEW
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -47,9 +51,39 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
-            <Button variant="outline" size="sm" className="ml-4">
-              Sign In
-            </Button>
+
+            {/* ✅ Replaced Sign In button */}
+            {!user ? (
+              <Button variant="outline" size="sm" className="ml-4" onClick={login}>
+                Sign In
+              </Button>
+            ) : (
+              <div className="relative ml-4">
+                <button
+                  className="flex items-center gap-2"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                >
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={user.photoURL || ""} />
+                    <AvatarFallback>{user.displayName?.[0]}</AvatarFallback>
+                  </Avatar>
+                  <span className="capitalize">{role ?? "Select Role"}</span>
+                </button>
+
+                {menuOpen && (
+                  <div className="absolute right-0 mt-2 bg-white shadow rounded p-2 space-y-1">
+                    {role === null && (
+                      <>
+                        <Button variant="ghost" onClick={() => setRole("tourist")}>Tourist</Button>
+                        <Button variant="ghost" onClick={() => setRole("researcher")}>Researcher</Button>
+                        <Button variant="ghost" onClick={() => setRole("admin")}>Admin</Button>
+                      </>
+                    )}
+                    <Button variant="destructive" onClick={logout}>Logout</Button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -83,9 +117,24 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
-              <Button variant="outline" size="sm" className="w-fit">
-                Sign In
-              </Button>
+
+              {/* ✅ Replace Sign In in mobile */}
+              {!user ? (
+                <Button variant="outline" size="sm" className="w-fit" onClick={login}>
+                  Sign In
+                </Button>
+              ) : (
+                <div className="flex flex-col space-y-1">
+                  {role === null && (
+                    <>
+                      <Button variant="ghost" onClick={() => setRole("tourist")}>Tourist</Button>
+                      <Button variant="ghost" onClick={() => setRole("researcher")}>Researcher</Button>
+                      <Button variant="ghost" onClick={() => setRole("admin")}>Admin</Button>
+                    </>
+                  )}
+                  <Button variant="destructive" onClick={logout}>Logout</Button>
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -15,13 +15,20 @@ import { useToast } from "@/components/ui/use-toast";
 
 // ✅ Firebase imports
 import { auth, db } from "../lib/firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";  // <-- missing earlier
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+
+// ✅ Auth Context
+import { useAuth } from "@/context/AuthContext";
 
 export const SignInDialog = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [role, setRole] = useState("tourist"); // default role
+  const [role, setRoleState] = useState("tourist"); // default role
   const { toast } = useToast();
+  const { setRole } = useAuth();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -32,7 +39,11 @@ export const SignInDialog = () => {
     const name = e.target["name"].value;
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       // ✅ Save role + name to Firestore
@@ -41,6 +52,8 @@ export const SignInDialog = () => {
         email,
         role,
       });
+
+      setRole(role); // ✅ update context
 
       toast({
         title: "Account created!",
@@ -65,7 +78,11 @@ export const SignInDialog = () => {
     const password = e.target["password"].value;
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       // ✅ Get role from Firestore
@@ -74,6 +91,7 @@ export const SignInDialog = () => {
 
       if (docSnap.exists()) {
         const userData = docSnap.data();
+        setRole(userData.role); // ✅ update context
         toast({
           title: "Sign in successful!",
           description: `Welcome back ${userData.name}, Role: ${userData.role}`,
@@ -122,11 +140,21 @@ export const SignInDialog = () => {
             <form onSubmit={handleSignin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="your@email.com" required />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="Enter your password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  required
+                />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Signing in..." : "Sign In"}
@@ -139,15 +167,30 @@ export const SignInDialog = () => {
             <form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" type="text" placeholder="Your full name" required />
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Your full name"
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="signup-email">Email</Label>
-                <Input id="signup-email" type="email" placeholder="your@email.com" required />
+                <Input
+                  id="signup-email"
+                  type="email"
+                  placeholder="your@email.com"
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="signup-password">Password</Label>
-                <Input id="signup-password" type="password" placeholder="Create a password" required />
+                <Input
+                  id="signup-password"
+                  type="password"
+                  placeholder="Create a password"
+                  required
+                />
               </div>
 
               {/* ✅ Role selector */}
@@ -157,7 +200,7 @@ export const SignInDialog = () => {
                   id="role"
                   className="w-full border rounded-md p-2"
                   value={role}
-                  onChange={(e) => setRole(e.target.value)}
+                  onChange={(e) => setRoleState(e.target.value)}
                 >
                   <option value="tourist">Tourist</option>
                   <option value="researcher">Researcher</option>

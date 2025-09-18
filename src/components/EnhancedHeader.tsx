@@ -1,5 +1,4 @@
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { 
   NavigationMenu,
   NavigationMenuContent,
@@ -9,13 +8,11 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { ModeToggle, useMode } from "@/components/ModeToggle";
-import { Badge } from "@/components/ui/badge";
 import { 
   Menu, 
   X, 
   Map, 
   Camera, 
-  Route, 
   BookOpen, 
   Search, 
   Download, 
@@ -23,17 +20,26 @@ import {
   Users, 
   Headphones,
   Bluetooth,
-  Bot,
   Archive
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import SignInDialog from "@/components/SignInDialog";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const EnhancedHeader = () => {
   const location = useLocation();
   const { mode } = useMode();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -41,13 +47,6 @@ const EnhancedHeader = () => {
     { name: "Monasteries Map", path: "/monasteries", icon: Map, description: "Interactive map of Sikkim monasteries" },
     { name: "360° Virtual Tours", path: "/virtual-tours", icon: Camera, description: "Immersive virtual monastery experiences" },
   ];
-
-  const archiveItems = mode === 'researcher' ? [
-    { name: "Scanned Manuscripts", path: "/archives/manuscripts", icon: BookOpen, description: "Digitized ancient texts & documents" },
-    { name: "AI-Powered Search", path: "/archives/search", icon: Search, description: "Smart categorization & discovery" },
-    { name: "Metadata Download", path: "/archives/download", icon: Download, description: "Academic citations & research data" },
-    { name: "Request Access", path: "/archives/access", icon: Archive, description: "Apply for restricted materials" },
-  ] : [];
 
   const calendarItems = [
     { name: "Festival Calendar", path: "/calendar", icon: Calendar, description: "Sacred festivals & ritual schedules" },
@@ -100,7 +99,7 @@ const EnhancedHeader = () => {
                         <Link
                           key={item.name}
                           to={item.path}
-                          className="block select-none space-y-1 rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          className="block select-none space-y-1 rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
                         >
                           <div className="flex items-center gap-2 text-sm font-medium">
                             <item.icon className="h-4 w-4" />
@@ -202,8 +201,36 @@ const EnhancedHeader = () => {
               <ModeToggle />
             </div>
 
+            {/* Auth UI */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="cursor-pointer">
+                    <AvatarFallback>
+                      {user.email?.[0]?.toUpperCase() ?? "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {/* User Email */}
+                  <DropdownMenuItem disabled className="cursor-default">
+                    {user.email}
+                  </DropdownMenuItem>
 
-            <SignInDialog />
+                  {/* Admin Badge */}
+                  <DropdownMenuItem disabled className="cursor-default text-red-600 font-bold">
+                    Admin
+                  </DropdownMenuItem>
+
+                  {/* Logout */}
+                  <DropdownMenuItem onClick={logout}>
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <SignInDialog />
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -227,82 +254,29 @@ const EnhancedHeader = () => {
                 <ModeToggle />
               </div>
               
-              <Link
-                to="/"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              
-              {/* Mobile Explore Section */}
-              <div className="pl-4 space-y-2">
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Explore</div>
-                {exploreItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-
-              {/* Mobile Digital Archives (Researcher Mode Only) */}
-              {mode === 'researcher' && (
-                <Link
-                  to="/archives"
-                  className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Digital Archives
+              <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+              {exploreItems.map((item) => (
+                <Link key={item.name} to={item.path} onClick={() => setMobileMenuOpen(false)}>
+                  {item.name}
                 </Link>
+              ))}
+              {mode === 'researcher' && (
+                <Link to="/archives" onClick={() => setMobileMenuOpen(false)}>Digital Archives</Link>
               )}
+              <Link to="/calendar" onClick={() => setMobileMenuOpen(false)}>Events</Link>
+              <Link to="/audio-guide" onClick={() => setMobileMenuOpen(false)}>Audio Guide</Link>
+              <Link to="/booking" onClick={() => setMobileMenuOpen(false)}>Booking</Link>
+              <Link to="/community" onClick={() => setMobileMenuOpen(false)}>Community</Link>
+              <Link to="/about" onClick={() => setMobileMenuOpen(false)}>About</Link>
 
-              <Link
-                to="/calendar"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Events
-              </Link>
-              
-              <Link
-                to="/audio-guide"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Audio Guide
-              </Link>
-
-              <Link
-                to="/booking"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Booking
-              </Link>
-
-              <Link
-                to="/community"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Community
-              </Link>
-              
-              <Link
-                to="/about"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              
-              <SignInDialog />
+              {/* Auth UI in mobile */}
+              {user ? (
+                <Button onClick={logout} variant="outline">
+                  Logout
+                </Button>
+              ) : (
+                <SignInDialog />
+              )}
             </div>
           </div>
         )}
