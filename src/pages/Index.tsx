@@ -18,19 +18,19 @@ const Index = () => {
     {
       name: "Rumtek Monastery",
       description: "Seat of the Karmapa with golden stupa",
-      image: "/monastery-interior.jpg",
+      image: "/src/assets/monastery-interior.jpg",
       location: "Gangtok"
     },
     {
       name: "Pemayangtse Monastery", 
       description: "17th century with Himalayan views",
-      image: "/prayer-flags.jpg",
+      image: "/src/assets/prayer-flags.jpg",
       location: "Pelling"
     },
     {
       name: "Tashiding Monastery",
       description: "Sacred Bumchu festival site",
-      image: "/hero-monastery.jpg",
+      image: "/src/assets/hero-monastery.jpg",
       location: "West Sikkim"
     }
   ];
@@ -102,33 +102,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-4">
-              Begin Your Spiritual Journey
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Whether virtual or physical, every journey starts with a single step
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/virtual-tours">
-                <Button size="lg" className="group">
-                  Start Virtual Tour
-                  <Play className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link to="/booking">
-                <Button variant="outline" size="lg" className="group">
-                  Book Your Visit
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      
     </div>
   );
 };
