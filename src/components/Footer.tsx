@@ -22,7 +22,7 @@ const Footer = () => {
             <div className="md:col-span-2">
               <div className="mb-6">
                 <h3 className="font-heading text-3xl font-bold mb-4">
-                  Monastery360
+                  SoulOfSikkim
                 </h3>
                 <p className="text-lg opacity-90 mb-6 max-w-md">
                   "Digitizing today, preserving forever."
@@ -38,7 +38,7 @@ const Footer = () => {
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <Mail className="h-5 w-5 text-saffron" />
-                  <span>info@monastery360.com</span>
+                  <span>info@SoulOfSikkim.com</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="h-5 w-5 text-saffron" />
@@ -154,7 +154,7 @@ const Footer = () => {
           <div className="max-w-6xl mx-auto px-4 py-6">
             <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
               <div className="flex items-center space-x-2 opacity-80">
-                <span>© 2024 Monastery360. Made with</span>
+                <span>© 2024 SoulOfSikkim. Made with</span>
                 <Heart className="h-4 w-4 text-saffron fill-saffron" />
                 <span>for Sikkim's sacred heritage</span>
               </div>
