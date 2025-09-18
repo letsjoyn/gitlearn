@@ -65,7 +65,7 @@ const About = () => {
               Preserving Sacred Heritage
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Monastery360 bridges ancient wisdom with modern technology, making Sikkim's 
+              SoulOfSikkim bridges ancient wisdom with modern technology, making Sikkim's 
               spiritual treasures accessible to the world while preserving them for future generations.
             </p>
             <div className="text-2xl font-display italic bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent mb-6 drop-shadow">
