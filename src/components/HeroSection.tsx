@@ -1,126 +1,101 @@
-// HeroSection.jsx
-import { useState, useEffect, useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Play, MapPin } from "lucide-react";
-import heroImage from "@/assets/hero-monastery.jpg";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
 
-const HeroSection = () => {
-  const [showVideo, setShowVideo] = useState(true);
-  const [fadeOut, setFadeOut] = useState(false);
-  const videoRef = useRef(null);
+const Header = () => {
+  const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Auto fade after 8 seconds
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // fallback in case autoplay fails
-        console.log("Autoplay blocked by browser, video muted is required.");
-      });
-    }
-  }, []);
+  const navItems = [
+    { name: "Home", path: "/" },
+    { name: "Virtual Tours", path: "/virtual-tours" },
+    { name: "Monasteries", path: "/monasteries" },
+    { name: "Book Visit", path: "/booking" },
+    { name: "Community", path: "/community" },
+    { name: "About", path: "/about" },
+  ];
 
-  const handleVideoEnd = () => {
-    setFadeOut(true);
-    setTimeout(() => setShowVideo(false), 700);
-  };
+  const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="w-full h-screen relative">
-      {/* VIDEO SECTION */}
-      {showVideo && (
-        <div
-          className={`w-full h-full relative transition-opacity duration-700 ${
-            fadeOut ? "opacity-0" : "opacity-100"
-          }`}
-        >
-          <video
-            ref={videoRef}
-            src="/sikkim-intro.mp4"
-            muted
-            playsInline
-            autoPlay
-            className="w-full h-full object-cover"
-            onEnded={handleVideoEnd}
-          />
+    <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
+      <div className="container mx-auto px-4">
+        <nav className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
+  <img 
+    src="/icon.jpg" // Replace with the actual path to your image
+    alt="Custom Icon" 
+    className="w-5 h-5 object-contain" // Adjust w- and h- for desired size, object-contain to fit
+  />
+</div>
+            <span className="font-display text-xl font-bold text-primary">
+              Monastery360
+            </span>
+          </Link>
 
-          {/* Overlay Text */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-white text-4xl font-bold">
-            Journey to Sikkim
-          </div>
-        </div>
-      )}
-
-      {/* HERO CONTENT AFTER VIDEO */}
-      {!showVideo && (
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-          {/* Background Image with Overlay */}
-          <div className="absolute inset-0 z-0">
-            <img
-              src={heroImage}
-              alt="Majestic Sikkim Monastery in the Himalayas"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary/40"></div>
-          </div>
-
-          {/* Floating Prayer Flags Animation */}
-          <div className="absolute top-10 left-10 w-32 h-8 opacity-60 animate-prayer-flag">
-            <div className="flex space-x-1">
-              <div className="w-6 h-8 bg-red-500 rounded-sm"></div>
-              <div className="w-6 h-8 bg-blue-500 rounded-sm"></div>
-              <div className="w-6 h-8 bg-yellow-500 rounded-sm"></div>
-              <div className="w-6 h-8 bg-green-500 rounded-sm"></div>
-              <div className="w-6 h-8 bg-white rounded-sm"></div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="relative z-10 text-center px-4 max-w-5xl mx-auto animate-fade-in">
-            <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              From Prayer Flags
-              <span className="block text-saffron">to Pixels</span>
-            </h1>
-
-            <p className="text-xl md:text-2xl text-white/90 mb-4 font-medium">
-              Sikkim's Monasteries for the World
-            </p>
-
-            <p className="text-lg md:text-xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Walk inside centuries of wisdom through immersive tours, cultural archives,
-              and spiritual journeys — anytime, anywhere.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-saffron to-saffron-light text-primary px-8 py-4 rounded-xl font-semibold text-lg shadow-saffron hover:shadow-heritage transition-all duration-300 hover:scale-105 group"
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive(item.path)
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-muted-foreground"
+                }`}
               >
-                <Play className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" />
-                Start a Virtual Tour
-              </Button>
+                {item.name}
+              </Link>
+            ))}
+            <Button variant="outline" size="sm" className="ml-4">
+              Sign In
+            </Button>
+          </div>
 
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-2 border-white text-white bg-white/10 backdrop-blur-sm px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-primary transition-all duration-300 hover:scale-105 group"
-              >
-                <MapPin className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" />
-                Book a Visit
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+        </nav>
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-4 border-t border-border">
+            <div className="flex flex-col space-y-4">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    isActive(item.path)
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              <Button variant="outline" size="sm" className="w-fit">
+                Sign In
               </Button>
             </div>
-
-            {/* Scroll Indicator */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-float">
-              <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
-                <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
-              </div>
-            </div>
           </div>
-        </section>
-      )}
-    </div>
+        )}
+      </div>
+    </header>
   );
 };
 
-export default HeroSection;
+export default Header;
