@@ -32,7 +32,7 @@ const Header = () => {
               <span className="text-white font-bold text-sm">M</span>
             </div>
             <span className="font-display text-xl font-bold text-primary">
-              Monastery360
+              SoulOfSikkim
             </span>
           </Link>
 
