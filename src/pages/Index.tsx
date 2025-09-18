@@ -18,19 +18,19 @@ const Index = () => {
     {
       name: "Rumtek Monastery",
       description: "Seat of the Karmapa with golden stupa",
-      image: "/src/assets/monastery-interior.jpg",
+      image: "/monastery-interior.jpg",
       location: "Gangtok"
     },
     {
       name: "Pemayangtse Monastery", 
       description: "17th century with Himalayan views",
-      image: "/src/assets/prayer-flags.jpg",
+      image: "/prayer-flags.jpg",
       location: "Pelling"
     },
     {
       name: "Tashiding Monastery",
       description: "Sacred Bumchu festival site",
-      image: "/src/assets/hero-monastery.jpg",
+      image: "/hero-monastery.jpg",
       location: "West Sikkim"
     }
   ];
