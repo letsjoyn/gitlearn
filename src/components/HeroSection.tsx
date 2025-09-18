@@ -44,9 +44,13 @@ const HeroSection = () => {
           />
 
           {/* Overlay Text */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-white text-4xl font-bold">
-            Journey to Sikkim
-          </div>
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+  <img
+    src="/sikkim.png" // Replace with the path to your image
+    alt="Sikkim Monasteries Logo"
+    className="w-100 md:w-80" // Adjust size as needed
+  />
+</div>
         </div>
       )}
 
