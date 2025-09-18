@@ -179,8 +179,8 @@ const InteractiveMap: React.FC = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Map/List view */}
           <div className="lg:col-span-2">
-            <Card className="card-heritage h-[600px]">
-              <CardHeader>
+            <Card className="card-heritage h-[600px] flex flex-col">
+              <CardHeader className="shrink-0">
                 <div className="flex items-center justify-between">
                   <CardTitle className="font-heading text-2xl text-primary flex items-center">
                     <MapPin className="h-6 w-6 mr-3 text-saffron" />
@@ -205,13 +205,13 @@ const InteractiveMap: React.FC = () => {
                 </div>
               </CardHeader>
 
-              <CardContent>
+              <CardContent className="flex-1 overflow-hidden">
                 {viewMode === "map" ? (
-                  <div className="h-[500px] w-full rounded-xl overflow-hidden shadow">
+                  <div className="h-full w-full rounded-xl overflow-hidden shadow">
                     <MapContainer
                       center={sikkimCenter}
                       zoom={8}
-                      style={{ height: "100%", width: "100%" }}
+                      className="h-full w-full"
                       scrollWheelZoom
                     >
                       <TileLayer
@@ -222,7 +222,7 @@ const InteractiveMap: React.FC = () => {
                       <FlyToMonastery
                         coords={
                           selectedMonastery
-                            ? [selectedMonastery.coordinates.lat, selectedMonastery.coordinates.lng] as [number, number]
+                            ? [selectedMonastery.coordinates.lat, selectedMonastery.coordinates.lng]
                             : null
                         }
                       />
@@ -252,7 +252,7 @@ const InteractiveMap: React.FC = () => {
                     </MapContainer>
                   </div>
                 ) : (
-                  <div className="space-y-4 h-full overflow-y-auto">
+                  <div className="space-y-4 h-full overflow-y-auto pr-2">
                     {monasteries.map((monastery) => (
                       <Card
                         key={monastery.id}
