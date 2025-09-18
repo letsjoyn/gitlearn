@@ -65,11 +65,15 @@ const EnhancedHeader = () => {
         <nav className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary-glow rounded-full flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">M</span>
-            </div>
+             <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
+  <img 
+    src="/icon.png" // Replace with the actual path to your image
+    alt="Custom Icon" 
+    className="w-5 h-5 object-contain" // Adjust w- and h- for desired size, object-contain to fit
+  />
+</div>
             <span className="font-heading text-xl font-bold text-primary">
-              Monastery360
+              SoulOfSikkim
             </span>
           </Link>
 
