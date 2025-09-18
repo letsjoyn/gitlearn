@@ -109,7 +109,7 @@ const About = () => {
               </div>
               <div className="relative">
                 <img
-                  src="/src/assets/monastery-interior.jpg"
+                  src="/monastery-interior.jpg"
                   alt="Monastery Interior"
                   className="rounded-lg shadow-lg"
                 />
