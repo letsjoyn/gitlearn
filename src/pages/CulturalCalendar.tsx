@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Calendar } from "../components/ui/calendar";
+import { DayPicker } from "react-day-picker";
+// ... other imports
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -19,15 +21,15 @@ import {
   CreditCard,
   Download
 } from "lucide-react";
-import { useMode } from "@/components/ModeToggle";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useMode } from "../components/ModeToggle";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Checkbox } from "../components/ui/checkbox";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
 const CulturalCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -42,7 +44,7 @@ const CulturalCalendar = () => {
       id: 1,
       title: "Losar Festival",
       monastery: "Rumtek Monastery", 
-      date: "2025-09-20",
+      date: "2025-10-03",
       time: "06:00 AM - 06:00 PM",
       type: "Major Festival",
       description: "Tibetan New Year celebration with traditional ceremonies, cham dances, and community gatherings",
@@ -101,7 +103,8 @@ const CulturalCalendar = () => {
   ];
 
   const upcomingEvents = [...defaultEvents, ...userSubmittedEvents];
-
+  const eventDates = new Set(upcomingEvents.map(event => event.date));
+  
   const eventTypes = [
     { id: "all", name: "All Events", count: upcomingEvents.length, color: "default" },
     { id: "festival", name: "Festivals", count: upcomingEvents.filter(e => e.type.includes("Festival")).length, color: "secondary" },
@@ -130,13 +133,11 @@ const CulturalCalendar = () => {
 
   const handleSubmitEvent = () => {
     setShowForm(true);
-    scrollToTop(); // Scroll to top when form is opened
-    console.log("Submit New Event button clicked. Displaying form.");
+    scrollToTop(); 
   };
 
   const handleEventNotifications = () => {
     alert("You are now subscribed to event notifications! 🔔");
-    console.log("Event Notifications button clicked. User subscribed.");
   };
   
   const handleExportCalendar = () => {
@@ -171,17 +172,15 @@ END:VCALENDAR`;
     link.click();
     document.body.removeChild(link);
 
-    console.log("Exporting calendar events as an .ics file.");
     alert("Calendar events have been exported! Check your downloads folder.");
   };
 
   const handleBookNow = (eventId: number) => {
     if (bookedEvents.includes(eventId)) {
       alert("You have already booked this event! 🎉");
-      console.log(`Event ID ${eventId} is already booked.`);
     } else {
       setBookingEventId(eventId);
-      scrollToTop(); // Scroll to top when booking page is opened
+      scrollToTop(); 
     }
   };
 
@@ -190,7 +189,7 @@ END:VCALENDAR`;
       setBookedEvents((prevBooked) => [...prevBooked, bookingEventId]);
       alert("Payment successful! Your ticket is confirmed. ✅");
       setBookingEventId(null);
-      scrollToTop(); // Scroll to top when booking is confirmed
+      scrollToTop(); 
     }
   };
 
@@ -239,7 +238,7 @@ END:VCALENDAR`;
     };
     setUserSubmittedEvents((prevEvents) => [...prevEvents, newEvent]);
     setShowForm(false);
-    scrollToTop(); // Scroll to top after form submission
+    scrollToTop(); 
     alert("Event submitted for review! It has been added to the calendar.");
   };
 
@@ -424,7 +423,7 @@ END:VCALENDAR`;
                   <span>Total Amount:</span>
                   <span>{eventToBook.price}</span>
                 </div>
-                
+              
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
                   <Input id="fullName" placeholder="John Doe" required />
@@ -490,11 +489,33 @@ END:VCALENDAR`;
                 </CardHeader>
                 <CardContent>
                   <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    className="rounded-md border"
-                  />
+  mode="single"
+  selected={selectedDate}
+  onSelect={setSelectedDate}
+  className="rounded-md border"
+  components={{
+    Day: ({ date, ...props }) => {
+      const isSelected = selectedDate && format(date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd');
+      return (
+        <div className="relative">
+          <button
+            type="button"
+            className={cn(
+              "w-8 h-8 flex items-center justify-center rounded-full",
+              isSelected ? "bg-primary text-white" : "hover:bg-muted"
+            )}
+            {...props}
+          >
+            {date.getDate()}
+          </button>
+          {eventDates.has(format(date, 'yyyy-MM-dd')) && (
+            <div className="absolute bottom-0.5 right-4 w-1.5 h-1.5 rounded-full bg-orange-600 border border-orange-800" />
+          )}
+        </div>
+      );
+    },
+  }}
+/>
                   
                   <div className="mt-6 space-y-2">
                     <h4 className="font-semibold text-sm">Quick Actions</h4>
