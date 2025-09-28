@@ -2,10 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Play, Map, Volume2, Globe, Clock, Star, Loader2 } from "lucide-react";
+import { Play, Map, Volume2, Globe, Clock, Star, Loader2, Search, X } from "lucide-react";
 
-// Assuming a tours data array is already defined as per previous examples.
-// If not, please paste the full tours array here.
 const tours = [
     {
       id: 1,
@@ -878,7 +876,6 @@ const tours = [
       },
     },
   ];
-
 const VirtualTours = () => {
   const [selectedTour, setSelectedTour] = useState(null);
   const [audioLang, setAudioLang] = useState("english");
@@ -886,27 +883,42 @@ const VirtualTours = () => {
   const [showAll, setShowAll] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const searchBarRef = useRef(null);
 
   const currentTour = tours.find((t) => t.tourUrl === selectedTour);
 
-  const handleSearchChange = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-
-    if (query.length > 1) {
+  // Enhanced: Show suggestions for any input length, highlight matches, keyboard navigation
+  useEffect(() => {
+    if (searchQuery.length > 0) {
       const matchingTours = tours.filter((tour) =>
-        tour.name.toLowerCase().includes(query.toLowerCase())
+        tour.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setSuggestions(matchingTours);
     } else {
       setSuggestions([]);
     }
-  };
+    setActiveSuggestion(-1);
+  }, [searchQuery]);
+
+  const handleSearchChange = (e) => setSearchQuery(e.target.value);
 
   const handleSelectSuggestion = (tourName) => {
     setSearchQuery(tourName);
     setSuggestions([]);
+  };
+
+  // Keyboard navigation for suggestions
+  const handleKeyDown = (e) => {
+    if (suggestions.length === 0) return;
+    if (e.key === "ArrowDown") {
+      setActiveSuggestion((prev) => Math.min(prev + 1, suggestions.length - 1));
+    } else if (e.key === "ArrowUp") {
+      setActiveSuggestion((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === "Enter" && activeSuggestion >= 0) {
+      setSearchQuery(suggestions[activeSuggestion].name);
+      setSuggestions([]);
+    }
   };
 
   useEffect(() => {
@@ -928,48 +940,84 @@ const VirtualTours = () => {
 
   const displayedTours = showAll || searchQuery.length > 0 ? filteredTours : filteredTours.slice(0, 3);
 
+  // Helper to highlight matched text
+  const highlightMatch = (text, query) => {
+    if (!query) return text;
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return text;
+    return (
+      <>
+        {text.slice(0, idx)}
+        <span className="bg-yellow-200 text-primary font-semibold rounded">{text.slice(idx, idx + query.length)}</span>
+        {text.slice(idx + query.length)}
+      </>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-[#f5f7fa] via-[#c3cfe2] to-[#e2eafc]">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-background py-20">
-        <div className="container mx-auto px-4 text-center max-w-4xl">
-          <h1 className="font-display text-4xl md:text-6xl font-bold text-primary mb-6">
+      <section className="relative py-20 bg-cover bg-center" style={{ backgroundImage: "url('/hero-monastery.jpg')" }}>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/60 via-primary/30 to-background/80 backdrop-blur-sm" />
+        <div className="relative container mx-auto px-4 text-center max-w-4xl z-10">
+          <h1 className="font-display text-4xl md:text-6xl font-bold text-white drop-shadow-lg mb-6 animate-fadeIn">
             Virtual Tours
           </h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            Immerse yourself in 360° panoramic experiences of Sikkim's sacred monasteries.
+          <p className="text-xl text-white/90 mb-8 animate-fadeIn delay-100">
+            Immerse yourself in 360° panoramic experiences of Sikkim's sacred monasteries.<br />
             Walk through centuries of wisdom from anywhere in the world.
           </p>
-          <div className="flex flex-col items-center mb-8 relative" ref={searchBarRef}>
-            <input
-              type="text"
-              placeholder="Search for a monastery..."
-              className="w-full max-w-lg p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary transition"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-            {suggestions.length > 0 && (
-              <ul className="absolute top-full w-full max-w-lg bg-white border border-gray-300 rounded-lg shadow-lg mt-2 z-10 max-h-60 overflow-y-auto">
-                {suggestions.map((tour) => (
-                  <li
-                    key={tour.id}
-                    className="p-3 hover:bg-gray-100 cursor-pointer text-left"
-                    onClick={() => handleSelectSuggestion(tour.name)}
-                  >
-                    {tour.name}
-                  </li>
-                ))}
+          <div className="flex flex-col items-center mb-8 relative w-full" ref={searchBarRef}>
+            <div className="relative w-full max-w-lg">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search for a monastery..."
+                className="w-full pl-10 pr-10 p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary transition bg-white/80 shadow-md backdrop-blur-md text-lg"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onKeyDown={handleKeyDown}
+                autoFocus
+              />
+              {searchQuery && (
+                <button
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500"
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search"
+                >
+                  <X />
+                </button>
+              )}
+            </div>
+            {searchQuery.length > 0 && (
+              <ul className="absolute top-full w-full max-w-lg bg-white/95 border border-gray-200 rounded-xl shadow-2xl mt-2 z-20 max-h-60 overflow-y-auto animate-fadeIn">
+                {suggestions.length === 0 ? (
+                  <li className="p-3 text-gray-500 text-left">No results found.</li>
+                ) : (
+                  suggestions.map((tour, idx) => (
+                    <li
+                      key={tour.id}
+                      className={`p-3 hover:bg-primary/10 cursor-pointer text-left transition rounded ${
+                        idx === activeSuggestion ? "bg-primary/20" : ""
+                      }`}
+                      onClick={() => handleSelectSuggestion(tour.name)}
+                      onMouseEnter={() => setActiveSuggestion(idx)}
+                    >
+                      {highlightMatch(tour.name, searchQuery)}
+                    </li>
+                  ))
+                )}
               </ul>
             )}
           </div>
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <Badge variant="secondary" className="text-sm flex items-center gap-1">
+          <div className="flex flex-wrap justify-center gap-4 mb-8 animate-fadeIn delay-200">
+            <Badge variant="secondary" className="text-sm flex items-center gap-1 bg-white/80 text-primary shadow">
               <Globe className="w-4 h-4" /> 6 Languages
             </Badge>
-            <Badge variant="secondary" className="text-sm flex items-center gap-1">
+            <Badge variant="secondary" className="text-sm flex items-center gap-1 bg-white/80 text-primary shadow">
               <Volume2 className="w-4 h-4" /> Audio Narration
             </Badge>
-            <Badge variant="secondary" className="text-sm flex items-center gap-1">
+            <Badge variant="secondary" className="text-sm flex items-center gap-1 bg-white/80 text-primary shadow">
               <Map className="w-4 h-4" /> Interactive Navigation
             </Badge>
           </div>
@@ -977,28 +1025,32 @@ const VirtualTours = () => {
       </section>
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {displayedTours.map((tour) => (
-              <Card key={tour.id} className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                <div className="relative overflow-hidden rounded-t-lg">
+              <Card
+                key={tour.id}
+                className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-white/70 backdrop-blur-lg border-0 shadow-lg animate-fadeIn"
+                style={{ borderRadius: "1.5rem" }}
+              >
+                <div className="relative overflow-hidden rounded-t-2xl">
                   <img
                     src={tour.image}
                     alt={tour.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                   <Button
                     size="icon"
-                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 border-white/20"
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/30 backdrop-blur-sm hover:bg-white/50 border-white/20 shadow-lg"
                     onClick={() => {
                       setLoading(true);
                       setSelectedTour(tour.tourUrl);
                       setAudioLang(tour.languages[0].toLowerCase());
                     }}
                   >
-                    <Play className="w-6 h-6 text-white" fill="white" />
+                    <Play className="w-7 h-7 text-primary" fill="currentColor" />
                   </Button>
-                  <Badge className="absolute top-4 right-4 bg-accent/90 text-accent-foreground">
+                  <Badge className="absolute top-4 right-4 bg-accent/90 text-accent-foreground shadow">
                     {tour.difficulty}
                   </Badge>
                 </div>
@@ -1049,14 +1101,14 @@ const VirtualTours = () => {
           </div>
           {!showAll && filteredTours.length > 3 && searchQuery.length === 0 && (
             <div className="text-center mt-12">
-              <Button onClick={() => setShowAll(true)} className="text-lg px-8 py-6">
+              <Button onClick={() => setShowAll(true)} className="text-lg px-8 py-6 shadow-lg rounded-xl">
                 Explore All {filteredTours.length} Tours
               </Button>
             </div>
           )}
           {showAll && (
             <div className="text-center mt-12">
-              <Button onClick={() => setShowAll(false)} variant="outline" className="text-lg px-8 py-6">
+              <Button onClick={() => setShowAll(false)} variant="outline" className="text-lg px-8 py-6 rounded-xl">
                 Show Less
               </Button>
             </div>
@@ -1064,18 +1116,19 @@ const VirtualTours = () => {
         </div>
       </section>
       {selectedTour && currentTour && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-          <div className="relative w-full max-w-5xl h-[85vh] bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden shadow-2xl animate-scaleIn">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl flex justify-center items-center z-50 p-4 animate-fadeIn">
+          <div className="relative w-full max-w-5xl h-[85vh] bg-white/20 backdrop-blur-2xl border border-white/30 rounded-3xl overflow-hidden shadow-2xl animate-scaleIn">
             <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-primary/90 to-accent/90 text-white p-4 flex justify-between items-center z-50">
               <h3 className="text-lg font-semibold">{currentTour.name}</h3>
               <button
                 className="p-2 rounded-full bg-red-500 hover:bg-red-600 transition"
                 onClick={() => setSelectedTour(null)}
+                aria-label="Close"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="absolute top-20 left-4 z-50 bg-white/80 rounded-md p-2 shadow">
+            <div className="absolute top-20 left-4 z-50 bg-white/90 rounded-md p-2 shadow">
               <label htmlFor="langSelect" className="text-xs font-medium mr-2">Audio:</label>
               <select
                 id="langSelect"
@@ -1089,7 +1142,7 @@ const VirtualTours = () => {
               </select>
             </div>
             {loading && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 z-40">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-40">
                 <Loader2 className="w-12 h-12 text-white animate-spin mb-4" />
                 <p className="text-white text-lg font-medium animate-pulse">
                   Loading Virtual Tour…
@@ -1117,11 +1170,18 @@ const VirtualTours = () => {
               autoPlay
               className="absolute bottom-12 left-1/2 transform -translate-x-1/2 
                         w-11/12 sm:w-2/3 md:w-2/5 
-                        bg-white/80 backdrop-blur-md rounded-lg shadow-lg p-2"
+                        bg-white/90 backdrop-blur-md rounded-lg shadow-lg p-2"
             />
           </div>
         </div>
       )}
+      {/* Animations */}
+      <style>{`
+        .animate-fadeIn { animation: fadeIn 0.7s both; }
+        .animate-scaleIn { animation: scaleIn 0.4s both; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: none; } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95);} to { opacity: 1; transform: scale(1);} }
+      `}</style>
     </div>
   );
 };
