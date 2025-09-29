@@ -445,7 +445,7 @@ const InteractiveMap: React.FC = () => {
     // FIX: Using a standard section with padding ensures it takes up its space 
     // and correctly scrolls *under* any fixed header you have.
     // The classes below replicate the look from VirtualTours/About component.
-    <section className="py-16 bg-gradient-to-br from-[#f5f7fa] via-[#c3cfe2] to-[#e2eafc]">
+    <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4">
         
         {/* Header */}
