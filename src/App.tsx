@@ -12,7 +12,7 @@ import Index from "./pages/Index";
 import VirtualTours from "./pages/VirtualTours";
 import Monasteries from "./pages/Monasteries";
 import Booking from "./pages/Booking";
-import CustomPlan from "./pages/customplan";
+import CustomPlan from "./pages/customplan"; // ✅ Updated import
 import Community from "./pages/Community";
 import About from "./pages/About";
 import DigitalArchives from "./pages/DigitalArchives";
