@@ -109,7 +109,6 @@ const BookingSection = () => {
   const selectedPkg = packages.find((pkg) => pkg.id === selectedPackage);
   const tripDays = selectedPkg ? selectedPkg.duration.split(" ")[0] : "1";
 
-  // reset traveler details whenever number of travelers changes
   useEffect(() => {
     setTravelerDetails(
       Array.from({ length: travelers }, () => ({
@@ -121,7 +120,11 @@ const BookingSection = () => {
     );
   }, [travelers]);
 
-  const handleTravelerChange = (index: number, field: keyof (typeof travelerDetails)[0], value: string) => {
+  const handleTravelerChange = (
+    index: number,
+    field: keyof (typeof travelerDetails)[0],
+    value: string
+  ) => {
     const updatedDetails = [...travelerDetails];
     updatedDetails[index] = {
       ...updatedDetails[index],
@@ -137,7 +140,6 @@ const BookingSection = () => {
 
   const handleConfirm = () => {
     setConfirmed(true);
-    // here you could send booking details to backend
     setTimeout(() => {
       setOpen(false);
     }, 1500);
@@ -146,19 +148,22 @@ const BookingSection = () => {
   return (
     <section className="py-20 px-4 bg-background">
       <div className="max-w-7xl mx-auto">
+        {/* Package Cards */}
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {packages.map((pkg, index) => (
             <Card
               key={pkg.id}
               className={`card-monastery cursor-pointer transition-all duration-500 transform hover:scale-105 ${
-                selectedPackage === pkg.id ? "ring-2 ring-saffron shadow-saffron" : ""
+                selectedPackage === pkg.id
+                  ? "ring-2 ring-saffron shadow-saffron"
+                  : ""
               }`}
               style={{ animationDelay: `${index * 200}ms` }}
               onClick={() => setSelectedPackage(pkg.id)}
             >
               <CardHeader className="relative">
                 {pkg.highlight && (
-                  <Badge className="absolute -top-2 left-4 bg-gradient-to-r from-saffron to-yellow-400 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow-md z-10">
+                  <Badge className="absolute -top-2 left-4 bg-gradient-to-r from-yellow-300 to-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow-md z-10">
                     {pkg.highlight}
                   </Badge>
                 )}
@@ -174,9 +179,11 @@ const BookingSection = () => {
                   </div>
                   <div className="text-right">
                     <div className="flex items-center space-x-2 mb-1">
-                      <Star className="h-4 w-4 fill-saffron text-saffron" />
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       <span className="font-semibold">{pkg.rating}</span>
-                      <span className="text-sm text-muted-foreground">({pkg.reviews})</span>
+                      <span className="text-sm text-muted-foreground">
+                        ({pkg.reviews})
+                      </span>
                     </div>
                     <div className="flex items-baseline space-x-2">
                       <span className="text-3xl md:text-4xl font-bold font-heading text-primary">
@@ -218,7 +225,7 @@ const BookingSection = () => {
                     <ul className="text-sm text-muted-foreground space-y-1 mt-2">
                       {pkg.includes.map((item, idx) => (
                         <li key={idx} className="flex items-start">
-                          <span className="text-saffron mr-2">•</span>
+                          <span className="text-yellow-500 mr-2">•</span>
                           {item}
                         </li>
                       ))}
@@ -232,52 +239,53 @@ const BookingSection = () => {
 
         {/* Booking Interface */}
         {selectedPackage && (
-          <Card className="card-heritage animate-fade-in">
+          <Card className="card-heritage animate-fade-in mb-12">
             <CardHeader>
               <CardTitle className="font-heading text-2xl text-primary flex items-center">
-                <Calendar className="h-6 w-6 mr-3 text-saffron" />
+                <Calendar className="h-6 w-6 mr-3 text-yellow-500" />
                 Complete Your Booking
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-3 gap-6">
-                {/* Date Picker */}
                 <div>
                   <label className="block text-sm font-semibold text-primary mb-2">
                     Select Dates
                   </label>
-                  {selectedPackage && (
-                    <DateRange
-                      editableDateInputs={true}
-                      onChange={(item: RangeKeyDict) => {
-                        const start = item.selection.startDate as Date;
-                        const end = new Date(start);
-                        end.setDate(start.getDate() + Number(tripDays) - 1);
-                        setDateRange([
-                          { ...item.selection, startDate: start, endDate: end, key: "selection" },
-                        ]);
-                      }}
-                      moveRangeOnFirstSelection={false}
-                      ranges={dateRange}
-                      minDate={new Date()}
-                      maxDate={new Date(
-                        new Date().setFullYear(new Date().getFullYear() + 1)
-                      )}
-                      rangeColors={["#F59E0B"]}
-                      months={1}
-                      direction="horizontal"
-                      showDateDisplay={true}
-                    />
-                  )}
+                  <DateRange
+                    editableDateInputs
+                    onChange={(item: RangeKeyDict) => {
+                      const start = item.selection.startDate as Date;
+                      const end = new Date(start);
+                      end.setDate(start.getDate() + Number(tripDays) - 1);
+                      setDateRange([
+                        {
+                          ...item.selection,
+                          startDate: start,
+                          endDate: end,
+                          key: "selection",
+                        },
+                      ]);
+                    }}
+                    moveRangeOnFirstSelection={false}
+                    ranges={dateRange}
+                    minDate={new Date()}
+                    maxDate={new Date(
+                      new Date().setFullYear(new Date().getFullYear() + 1)
+                    )}
+                    rangeColors={["#FACC15"]}
+                    months={1}
+                    direction="horizontal"
+                    showDateDisplay
+                  />
                 </div>
 
-                {/* Travelers dropdown */}
                 <div>
                   <label className="block text-sm font-semibold text-primary mb-2">
                     Travelers
                   </label>
                   <select
-                    className="w-full p-3 border border-border rounded-xl focus:ring-2 focus:ring-saffron focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                     value={travelers}
                     onChange={(e) => setTravelers(Number(e.target.value))}
                   >
@@ -288,10 +296,9 @@ const BookingSection = () => {
                   </select>
                 </div>
 
-                {/* Book Now Button */}
                 <div className="flex items-end">
                   <Button
-                    className="w-full bg-gradient-to-r from-saffron to-saffron-light text-primary px-8 py-3 rounded-xl font-semibold text-lg shadow-saffron hover:shadow-heritage transition-all duration-300 hover:scale-105"
+                    className="w-full bg-gradient-to-r from-yellow-400 to-yellow-300 text-primary font-semibold text-lg rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
                     onClick={handleBooking}
                   >
                     Book Now
@@ -299,13 +306,10 @@ const BookingSection = () => {
                 </div>
               </div>
 
-              {/* Traveler Details Form */}
+              {/* Traveler Details */}
               <div className="mt-8 space-y-6">
                 {travelerDetails.map((traveler, i) => (
-                  <div
-                    key={i}
-                    className="p-4 border rounded-xl bg-muted shadow-sm"
-                  >
+                  <div key={i} className="p-4 border rounded-xl bg-muted shadow-sm">
                     <h4 className="font-semibold text-primary mb-3">
                       Traveler {i + 1}
                     </h4>
@@ -353,6 +357,28 @@ const BookingSection = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Buttons now inside page */}
+        <div className="flex flex-wrap justify-center gap-6 mt-8">
+          <Button
+            onClick={() => (window.location.href = "/customplan")}
+            className="bg-gradient-to-r from-yellow-400 to-yellow-200 text-gray-900 font-semibold rounded-xl px-8 py-3 text-sm shadow-md hover:shadow-lg transition-all duration-300"
+          >
+          Customize Your Travel Plan
+          </Button>
+          <Button
+            onClick={() => {
+              const aboutSection = document.getElementById("about-section");
+              if (aboutSection)
+                aboutSection.scrollIntoView({ behavior: "smooth" });
+              else window.location.href = "/#about";
+            }}
+            variant="outline"
+            className="border-yellow-400 text-yellow-600 hover:bg-yellow-50 rounded-xl px-8 py-3 text-sm"
+          >
+          Contact Travel Agents
+          </Button>
+        </div>
       </div>
 
       {/* Booking Modal */}
