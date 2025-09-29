@@ -123,7 +123,7 @@ export const SignInDialog = () => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Welcome to Monastery360</DialogTitle>
+          <DialogTitle>Welcome to SoulOfSikkim</DialogTitle>
           <DialogDescription>
             Sign in to access your saved tours and personalized recommendations.
           </DialogDescription>
