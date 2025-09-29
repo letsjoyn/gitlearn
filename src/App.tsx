@@ -12,6 +12,7 @@ import Index from "./pages/Index";
 import VirtualTours from "./pages/VirtualTours";
 import Monasteries from "./pages/Monasteries";
 import Booking from "./pages/Booking";
+import CustomPlan from "./pages/customplan";
 import Community from "./pages/Community";
 import About from "./pages/About";
 import DigitalArchives from "./pages/DigitalArchives";
@@ -42,23 +43,26 @@ const App = () => (
                   <Route path="/booking" element={<Booking />} />
                   <Route path="/community" element={<Community />} />
                   <Route path="/about" element={<About />} />
-                  
+
+                  {/* Custom Plan Route */}
+                  <Route path="/customplan" element={<CustomPlan />} />
+
                   {/* Digital Archives Routes */}
                   <Route path="/archives/*" element={<DigitalArchives />} />
                   <Route path="/archives/manuscripts" element={<DigitalArchives />} />
                   <Route path="/archives/search" element={<DigitalArchives />} />
                   <Route path="/archives/download" element={<DigitalArchives />} />
                   <Route path="/archives/access" element={<DigitalArchives />} />
-                  
+
                   {/* Cultural Calendar Routes */}
                   <Route path="/calendar" element={<CulturalCalendar />} />
                   <Route path="/calendar/booking" element={<CulturalCalendar />} />
                   <Route path="/calendar/submit" element={<CulturalCalendar />} />
-                  
+
                   {/* Audio Guide Routes */}
                   <Route path="/audio-guide" element={<AudioGuide />} />
                   <Route path="/audio-guide/offline" element={<AudioGuide />} />
-                  
+
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
