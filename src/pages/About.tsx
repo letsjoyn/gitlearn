@@ -52,28 +52,34 @@ const About = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-background py-20">
-        <div className="container mx-auto px-4">
-          <motion.div 
-            className="max-w-4xl mx-auto text-center"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h1 className="font-display text-4xl md:text-6xl font-bold text-primary mb-6">
-              Preserving Sacred Heritage
-            </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              SoulOfSikkim bridges ancient wisdom with modern technology, making Sikkim's 
-              spiritual treasures accessible to the world while preserving them for future generations.
-            </p>
-            <div className="text-2xl font-display italic bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent mb-6 drop-shadow">
-              "Digitizing today, preserving forever."
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      <section
+  className="relative bg-cover bg-center py-20"
+  style={{ backgroundImage: "url('/about.jpg')" }} // <-- replace with your image
+>
+  {/* Overlay for readability */}
+  <div className="absolute inset-0 bg-black/40" />
+
+  <div className="container mx-auto px-4 relative z-10">
+    <motion.div 
+      className="max-w-4xl mx-auto text-center"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      viewport={{ once: true }}
+    >
+      <h1 className="font-display text-4xl md:text-6xl font-bold text-white mb-6">
+        Preserving Sacred Heritage
+      </h1>
+      <p className="text-xl text-gray-200 mb-8">
+        SoulOfSikkim bridges ancient wisdom with modern technology, making Sikkim's 
+        spiritual treasures accessible to the world while preserving them for future generations.
+      </p>
+      <div className="text-2xl font-display italic bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent mb-6 drop-shadow">
+        "Digitizing today, preserving forever."
+      </div>
+    </motion.div>
+  </div>
+</section>
 
       {/* Mission Section */}
       <section className="py-16">
