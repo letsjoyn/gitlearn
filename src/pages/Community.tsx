@@ -1,4 +1,5 @@
 import CommunitySection from "@/components/CommunitySection";
+import { motion } from "framer-motion";
 
 const Community = () => {
   return (
@@ -12,7 +13,12 @@ const Community = () => {
         <div className="absolute inset-0 bg-black/40" />
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            className="max-w-4xl mx-auto text-center"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
             <h1 className="font-display text-4xl md:text-6xl font-bold text-white mb-6">
               Community Stories
             </h1>
@@ -20,7 +26,7 @@ const Community = () => {
               Share your spiritual journey and connect with fellow travelers, locals, and monastery guardians. 
               Your stories help preserve and celebrate this sacred heritage.
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
