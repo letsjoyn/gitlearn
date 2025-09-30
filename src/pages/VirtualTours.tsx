@@ -955,7 +955,7 @@ const VirtualTours = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f5f7fa] via-[#c3cfe2] to-[#e2eafc]">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="relative py-20 bg-cover bg-center" style={{ backgroundImage: "url('/hero-monastery.jpg')" }}>
         <div className="absolute inset-0 bg-gradient-to-br from-primary/60 via-primary/30 to-background/80 backdrop-blur-sm" />
