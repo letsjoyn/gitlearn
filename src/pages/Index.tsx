@@ -128,10 +128,8 @@ const Index = () => {
             <HeroSection />
 
             
-
-
             {/* Sliding Monastery Carousel - More Attractive */}
-            <section className="bg-gray-50 dark:bg-gray-900 rounded-xl shadow-inner"> {/* Changed background for visual separation */}
+            <section className="bg-white dark:bg-gray-900 rounded-xl shadow-inner py-8"> {/* Changed background for visual separation */}
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto text-center mb-10">
                      
@@ -171,17 +169,19 @@ const Index = () => {
                             ))}
                         </div>
                     </div>
-                    {/* Central Call-to-Action for the slider section */}
-                    <div className="text-center mt-12">
-                        <Link to="/monasteries">
-                            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-lg">
-                                Explore All Monasteries
-                                <ArrowRight className="w-5 h-5 ml-2" />
-                            </Button>
-                        </Link>
-                    </div>
+                    {/* Removed the Central Call-to-Action from here */}
                 </div>
             </section>
+
+            {/* Central Call-to-Action for the slider section - Moved Outside */}
+            <div className="container mx-auto px-4 mt-8 mb-16 text-center">
+                <Link to="/monasteries">
+                    <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-lg">
+                        Explore All Monasteries
+                        <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                </Link>
+            </div>
                 
             <FeaturesSection />
             {/* Uncomment if you wish to re-include this section */}
